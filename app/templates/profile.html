@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header">
+                <h4>Mi Perfil</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 text-center">
+                        <img src="{{ url_for('static', filename=current_user.get_profile_picture()) }}"
+                            alt="Profile Picture" class="img-fluid rounded-circle mb-3"
+                            style="max-width: 200px; max-height: 200px; object-fit: cover;">
+
+                        <form method="POST" enctype="multipart/form-data">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <div class="mb-3">
+                                <label for="profile_picture" class="form-label">Cambiar Foto de Perfil</label>
+                                <input type="file" class="form-control" id="profile_picture" name="profile_picture"
+                                    accept="image/*">
+                                <small class="text-muted">Formatos: JPG, PNG, GIF (máx. 2MB)</small>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Actualizar Foto</button>
+                        </form>
+                    </div>
+
+                    <div class="col-md-8">
+                        <h5>Información del Usuario</h5>
+                        <hr>
+                        <div class="mb-3">
+                            <strong>Nombre de Usuario:</strong>
+                            <p>{{ current_user.username }}</p>
+                        </div>
+                        <div class="mb-3">
+                            <strong>Email:</strong>
+                            <p>{{ current_user.email }}</p>
+                        </div>
+                        <div class="mb-3">
+                            <strong>Rol:</strong>
+                            <p>
+                                {% if current_user.role == 'admin' %}
+                                <span class="badge bg-primary">Administrador</span>
+                                {% elif current_user.role == 'tecnico' %}
+                                <span class="badge bg-success">Técnico</span>
+                                {% else %}
+                                <span class="badge bg-info">Usuario</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

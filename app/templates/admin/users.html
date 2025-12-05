@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Gestión de Usuarios</h2>
+<div class="mb-3">
+    <a href="{{ url_for('admin.create_user') }}" class="btn btn-success">Crear Nuevo Usuario</a>
+    <a href="{{ url_for('admin.audit_logs') }}" class="btn btn-info">📜 Registro de Auditoría</a>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Usuario</th>
+            <th>Email</th>
+            <th>Rol</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.id }}</td>
+            <td>{{ user.username }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.role }}</td>
+            <td>
+                <div class="d-flex gap-2">
+                    <a href="{{ url_for('admin.edit_user', id=user.id) }}" class="btn btn-sm btn-primary">Editar</a>
+
+                    <form action="{{ url_for('admin.delete_user', id=user.id) }}" method="post"
+                        onsubmit="return confirm('¿Estás seguro de eliminar este usuario?');">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                    </form>
+
+                    <form action="{{ url_for('admin.reset_password', id=user.id) }}" method="post" class="d-inline">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <div class="input-group input-group-sm">
+                            <input type="password" name="new_password" class="form-control"
+                                placeholder="Nueva contraseña" required>
+                            <button class="btn btn-warning" type="submit">Reset</button>
+                        </div>
+                    </form>
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

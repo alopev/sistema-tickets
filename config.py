@@ -1,0 +1,37 @@
+import os
+from urllib.parse import quote_plus
+
+class Config:
+    # Security: Use strong SECRET_KEY from environment
+    SECRET_KEY = os.environ.get('SECRET_KEY')
+    if not SECRET_KEY:
+        raise ValueError("SECRET_KEY must be set in environment variables (.env file)")
+    
+    # Database configuration
+    db_password = os.environ.get('DB_PASSWORD')
+    if not db_password:
+        raise ValueError("DB_PASSWORD must be set in environment variables (.env file)")
+    
+    password = quote_plus(db_password)
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
+        f'mysql+mysqlconnector://root:{password}@localhost/ticket_db'
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    UPLOAD_FOLDER = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'app/static/uploads')
+    MAX_CONTENT_LENGTH = 16 * 1024 * 1024 # 16MB max limit
+    
+    # Email configuration
+    MAIL_SERVER = os.environ.get('MAIL_SERVER') or 'smtp.gmail.com'
+    MAIL_PORT = int(os.environ.get('MAIL_PORT') or 587)
+    MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS', 'true').lower() in ['true', 'on', '1']
+    MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
+    MAIL_DEFAULT_SENDER = os.environ.get('MAIL_DEFAULT_SENDER') or 'noreply@helpdesk.com'
+    
+    # CSRF Protection
+    WTF_CSRF_ENABLED = True
+    WTF_CSRF_TIME_LIMIT = None  # No time limit for CSRF tokens
+
+    # Session Configuration
+    from datetime import timedelta
+    PERMANENT_SESSION_LIFETIME = timedelta(minutes=5)
+    SESSION_REFRESH_EACH_REQUEST = True

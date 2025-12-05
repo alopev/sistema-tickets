@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h3>Ticket {{ ticket.ticket_number }}: {{ ticket.title }}</h3>
+        <span
+            class="badge bg-{{ 'danger' if ticket.status == 'abierto' else 'warning' if ticket.status == 'en_proceso' else 'success' }}">
+            {{ ticket.status }}
+        </span>
+    </div>
+    <div class="card-body">
+        <p><strong>Descripción:</strong></p>
+        <p>{{ ticket.description }}</p>
+        <hr>
+        <div class="row">
+            <div class="col-md-6">
+                <p><strong>Prioridad:</strong> {{ ticket.priority }}</p>
+                <p><strong>Creado por:</strong> {{ ticket.created_by.username }}</p>
+                <p><strong>Fecha:</strong> {{ ticket.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>Asignado a:</strong> {{ ticket.assigned_to.username if ticket.assigned_to else 'Sin asignar'
+                    }}</p>
+                {% if ticket.attachment %}
+                <p><strong>Adjunto:</strong>
+                    <a href="{{ url_for('static', filename='uploads/' + ticket.attachment) }}" target="_blank"
+                        class="btn btn-sm btn-outline-primary">
+                        Ver Archivo
+                    </a>
+                </p>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if current_user.role in ['admin', 'tecnico'] %}
+        <hr>
+        <h4>Gestión (Técnico/Admin)</h4>
+        <form method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="row">
+                <div class="col-md-6">
+                    <label class="form-label">Estado</label>
+                    <select name="status" class="form-select">
+                        <option value="abierto" {% if ticket.status=='abierto' %}selected{% endif %}>Abierto</option>
+                        <option value="en_proceso" {% if ticket.status=='en_proceso' %}selected{% endif %}>En Proceso
+                        </option>
+                        <option value="cerrado" {% if ticket.status=='cerrado' %}selected{% endif %}>Cerrado</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Asignar a</label>
+                    <select name="assigned_to" class="form-select">
+                        <option value="">-- Sin asignar --</option>
+                        {% for tech in technicians %}
+                        <option value="{{ tech.id }}" {% if ticket.assigned_to_id==tech.id %}selected{% endif %}>
+                            {{ tech.username }} ({{ tech.role }})
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-success mt-3">Actualizar Ticket</button>
+        </form>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card mt-4">
+    <div class="card-header">
+        <h4>Comentarios</h4>
+    </div>
+    <div class="card-body">
+        <div id="comments-container">
+            {% for comment in ticket.comments %}
+            <div class="mb-3 border-bottom pb-2">
+                <div class="d-flex justify-content-between">
+                    <strong>{{ comment.user.username }}</strong>
+                    <small class="text-muted">{{ comment.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                </div>
+                <p class="mb-1">{{ comment.content }}</p>
+            </div>
+            {% else %}
+            <p class="text-muted" id="no-comments">No hay comentarios aún.</p>
+            {% endfor %}
+        </div>
+
+        <hr>
+        <form action="{{ url_for('main.add_comment', id=ticket.id) }}" method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="mb-3">
+                <label class="form-label">Agregar Comentario</label>
+                <textarea name="content" class="form-control" rows="3" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Enviar Comentario</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    var socket = io();
+    var ticketId = {{ ticket.id }};
+
+    socket.on('ticket_updated', function (data) {
+        if (data.ticket_id == ticketId) {
+            // Update status badge
+            var badge = document.querySelector('.card-header .badge');
+            badge.className = 'badge bg-' + (data.status == 'abierto' ? 'danger' : (data.status == 'en_proceso' ? 'warning' : 'success'));
+            badge.innerText = data.status;
+
+            // Reload page to update all fields
+            location.reload();
+        }
+    });
+
+    socket.on('new_comment', function (data) {
+        if (data.ticket_id == ticketId) {
+            var commentsContainer = document.getElementById('comments-container');
+
+            // Remove "no comments" message if exists
+            var noComments = document.getElementById('no-comments');
+            if (noComments) {
+                noComments.remove();
+            }
+
+            // Add new comment
+            var commentDiv = document.createElement('div');
+            commentDiv.className = 'mb-3 border-bottom pb-2';
+            commentDiv.innerHTML =
+                '<div class="d-flex justify-content-between">' +
+                '<strong>' + data.user + '</strong>' +
+                '<small class="text-muted">' + data.timestamp + '</small>' +
+                '</div>' +
+                '<p class="mb-1">' + data.content + '</p>';
+
+            commentsContainer.appendChild(commentDiv);
+        }
+    });
+</script>
+{% endblock %}

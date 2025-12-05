@@ -1,0 +1,256 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Dashboard Administrativo</h2>
+
+<div class="row mt-4">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary mb-3">
+            <div class="card-header">Total Tickets</div>
+            <div class="card-body">
+                <h5 class="card-title">{{ total }}</h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-danger mb-3">
+            <div class="card-header">Abiertos</div>
+            <div class="card-body">
+                <h5 class="card-title">{{ open }}</h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-warning mb-3">
+            <div class="card-header">En Proceso</div>
+            <div class="card-body">
+                <h5 class="card-title">{{ process }}</h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-success mb-3">
+            <div class="card-header">Cerrados</div>
+            <div class="card-body">
+                <h5 class="card-title">{{ closed }}</h5>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">Estado de Tickets</div>
+            <div class="card-body" style="position: relative; height: 300px;">
+                <canvas id="statusChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">Prioridad de Tickets</div>
+            <div class="card-body" style="position: relative; height: 300px;">
+                <canvas id="priorityChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">Acciones Rápidas</div>
+            <div class="card-body">
+                <div class="d-flex gap-2">
+                    <a href="{{ url_for('main.export_excel') }}" class="btn btn-success flex-fill">Exportar Excel</a>
+                    <a href="{{ url_for('main.export_pdf') }}" class="btn btn-danger flex-fill">Exportar PDF</a>
+                    <a href="{{ url_for('main.export_csv') }}" class="btn btn-info flex-fill text-white">Exportar
+                        CSV</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    (function () {
+        'use strict';
+
+        // Wait for DOM and Chart.js to be ready
+        if (typeof Chart === 'undefined') {
+            console.error('Chart.js is not loaded!');
+            return;
+        }
+
+        // Pass data from Flask to JS
+        const statusData = {{ status_data | tojson
+    }};
+    const priorityData = {{ priority_data | tojson }};
+
+    console.log('Dashboard Data:', { statusData, priorityData });
+
+    // Chart.js Color Config
+    const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+    const textColor = isDark ? '#f8f9fa' : '#212529';
+    const gridColor = isDark ? '#495057' : '#dee2e6';
+
+    Chart.defaults.color = textColor;
+    Chart.defaults.borderColor = gridColor;
+
+    // Status Chart (Doughnut)
+    const statusCanvas = document.getElementById('statusChart');
+    if (statusCanvas) {
+        try {
+            const ctx = statusCanvas.getContext('2d');
+            window.statusChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Abiertos', 'En Proceso', 'Cerrados'],
+                    datasets: [{
+                        data: statusData,
+                        backgroundColor: [
+                            '#dc3545',
+                            '#ffc107',
+                            '#198754'
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 15,
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            console.log('Status chart created successfully');
+        } catch (error) {
+            console.error('Error creating status chart:', error);
+        }
+    } else {
+        console.error('Status canvas not found!');
+    }
+
+    // Priority Chart (Bar)
+    const priorityCanvas = document.getElementById('priorityChart');
+    if (priorityCanvas) {
+        try {
+            const ctx = priorityCanvas.getContext('2d');
+            window.priorityChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Alta', 'Media', 'Baja'],
+                    datasets: [{
+                        label: 'Cantidad de Tickets',
+                        data: priorityData,
+                        backgroundColor: [
+                            '#dc3545',
+                            '#ffc107',
+                            '#0d6efd'
+                        ],
+                        borderRadius: 5,
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1,
+                                color: textColor
+                            },
+                            grid: {
+                                color: gridColor
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: textColor
+                            },
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+            console.log('Priority chart created successfully');
+        } catch (error) {
+            console.error('Error creating priority chart:', error);
+        }
+    } else {
+        console.error('Priority canvas not found!');
+    }
+
+    // Real-time Updates via Socket.IO
+    if (typeof socket !== 'undefined') {
+        socket.on('dashboard_update', function () {
+            console.log('Dashboard update event received');
+
+            // Show toast notification
+            if (typeof Swal !== 'undefined') {
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+                Toast.fire({
+                    icon: 'info',
+                    title: 'Actualizando datos...'
+                });
+            }
+
+            // Fetch new data
+            fetch('/api/dashboard-stats')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('New data received:', data);
+
+                    // Update Cards
+                    const titles = document.querySelectorAll('.card-title');
+                    if (titles.length >= 4) {
+                        titles[0].innerText = data.total;
+                        titles[1].innerText = data.open;
+                        titles[2].innerText = data.process;
+                        titles[3].innerText = data.closed;
+                    }
+
+                    // Update Charts
+                    if (window.statusChart) {
+                        window.statusChart.data.datasets[0].data = data.status_data;
+                        window.statusChart.update();
+                    }
+                    if (window.priorityChart) {
+                        window.priorityChart.data.datasets[0].data = data.priority_data;
+                        window.priorityChart.update();
+                    }
+                })
+                .catch(err => console.error('Error fetching stats:', err));
+        });
+    }
+}) ();
+</script>
+{% endblock %}

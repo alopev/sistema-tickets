@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sistema de Tickets</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center" href="{{ url_for('main.index') }}">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Help Desk" height="40" class="me-2">
+        <span>HELP DESK</span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          {% if current_user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('main.index') }}">Dashboard</a>
+          </li>
+          {% if current_user.role == 'admin' %}
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('admin.users') }}">Usuarios</a>
+          </li>
+          {% endif %}
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('main.tickets') }}">Tickets</a>
+          </li>
+          <li class="nav-item">
+            <span class="nav-link text-light">|</span>
+          </li>
+          <li class="nav-item">
+            <span class="nav-link text-light d-flex align-items-center">
+              <img src="{{ url_for('static', filename=current_user.get_profile_picture()) }}" alt="Profile"
+                class="rounded-circle me-2" width="30" height="30" style="object-fit: cover;">
+              Hola, {{ current_user.username }}
+            </span>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('main.profile') }}">Mi Perfil</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('auth.logout') }}">Salir</a>
+          </li>
+          {% else %}
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('auth.login') }}">Ingresar</a>
+          </li>
+          {% endif %}
+          <li class="nav-item">
+            <button class="btn btn-link nav-link" id="darkModeToggle">🌙</button>
+          </li>
+        </ul>
+        <form class="d-flex ms-3" action="{{ url_for('main.search') }}" method="get">
+          <input class="form-control me-2" type="search" name="q" placeholder="Buscar..." aria-label="Search">
+          <button class="btn btn-outline-light" type="submit">🔍</button>
+        </form>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mt-4">
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-info">{{ message }}</div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+
+  <script>
+    // Dark Mode Logic
+    const toggleBtn = document.getElementById('darkModeToggle');
+    const html = document.documentElement;
+
+    if (localStorage.getItem('theme') === 'dark') {
+      html.setAttribute('data-bs-theme', 'dark');
+      toggleBtn.innerText = '☀️';
+    }
+
+    toggleBtn.addEventListener('click', () => {
+      if (html.getAttribute('data-bs-theme') === 'dark') {
+        html.setAttribute('data-bs-theme', 'light');
+        localStorage.setItem('theme', 'light');
+        toggleBtn.innerText = '🌙';
+      } else {
+        html.setAttribute('data-bs-theme', 'dark');
+        localStorage.setItem('theme', 'dark');
+        toggleBtn.innerText = '☀️';
+      }
+    });
+
+  </script>
+
+
+  {% if current_user.is_authenticated %}
+  <!-- Chat List Widget -->
+  <div id="chat-widget" style="position: fixed; bottom: 20px; right: 20px; width: 300px; z-index: 1000;">
+    <div class="card">
+      <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center"
+        style="cursor: pointer;" onclick="toggleChatList()">
+        <span>💬 Chat Privado</span>
+        <span id="chat-toggle-icon">+</span>
+      </div>
+      <div class="card-body p-0" id="chat-list-body"
+        style="display: none; height: 300px; overflow-y: auto; padding: 10px;">
+        <h6 class="mb-2 px-2">Usuarios Conectados</h6>
+        <div id="online-users-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Container for chat windows -->
+  <div id="chat-windows-container"></div>
+
+  <style>
+    .chat-window {
+      position: fixed;
+      width: 350px;
+      height: 450px;
+      z-index: 999;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .chat-window-header {
+      cursor: move;
+    }
+
+    .chat-messages {
+      height: 320px;
+      overflow-y: auto;
+      padding: 10px;
+    }
+  </style>
+
+  <script>
+    var socket = io();
+    var chatListBody = document.getElementById('chat-list-body');
+    var onlineUsersList = document.getElementById('online-users-list');
+    var chatWindowsContainer = document.getElementById('chat-windows-container');
+    var chatHeader = document.querySelector('#chat-widget .card-header');
+
+    var isListOpen = false;
+    var blinkInterval;
+    var currentUserId = {{ current_user.id }};
+    var openChatWindows = {};
+    var windowPositionOffset = 0;
+    var unreadMessages = {};
+
+    function toggleChatList() {
+      isListOpen = !isListOpen;
+      chatListBody.style.display = isListOpen ? 'block' : 'none';
+      document.getElementById('chat-toggle-icon').innerText = isListOpen ? '-' : '+';
+
+      if (isListOpen) {
+        stopBlinking();
+        socket.emit('get_online_users');
+      }
+    }
+
+    function startBlinking() {
+      if (blinkInterval) return;
+      blinkInterval = setInterval(function () {
+        chatHeader.classList.toggle('bg-primary');
+        chatHeader.classList.toggle('bg-warning');
+      }, 500);
+    }
+
+    function stopBlinking() {
+      clearInterval(blinkInterval);
+      blinkInterval = null;
+      chatHeader.classList.add('bg-primary');
+      chatHeader.classList.remove('bg-warning');
+    }
+
+
+    socket.on('unread_counts', function (data) {
+      unreadMessages = data;
+
+      // Update badges for all users
+      for (var userId in unreadMessages) {
+        checkAllUnread();
+
+        if (openChatWindows[userId]) {
+          openChatWindows[userId].style.zIndex = 1000;
+          return;
+        }
+
+        var chatWindow = document.createElement('div');
+        chatWindow.className = 'chat-window card';
+        chatWindow.id = 'chat-window-' + userId;
+
+        var bottom = 20 + (windowPositionOffset * 30);
+        var right = 340 + (windowPositionOffset * 30);
+        windowPositionOffset = (windowPositionOffset + 1) % 5;
+
+        chatWindow.style.bottom = bottom + 'px';
+        chatWindow.style.right = right + 'px';
+
+        chatWindow.innerHTML =
+          '<div class="card-header bg-info text-white d-flex justify-content-between align-items-center chat-window-header">' +
+          '<div class="d-flex align-items-center">' +
+          '<img src="/static/' + userProfilePic + '" class="rounded-circle me-2" width="30" height="30" style="object-fit: cover;">' +
+          '<strong>' + username + '</strong>' +
+          '</div>' +
+          '<button class="btn btn-sm btn-link text-white" onclick="closeChatWindow(' + userId + ')">✕</button>' +
+          '</div>' +
+          '<div class="chat-messages" id="messages-' + userId + '"></div>' +
+          '<div class="p-2 border-top">' +
+          '<div class="input-group input-group-sm">' +
+          '<input type="text" id="chat-input-' + userId + '" class="form-control" placeholder="Escribe un mensaje...">' +
+          '<button class="btn btn-primary" onclick="sendMessageToUser(' + userId + ')">Enviar</button>' +
+          '</div>' +
+          '</div>';
+
+        chatWindowsContainer.appendChild(chatWindow);
+        openChatWindows[userId] = chatWindow;
+
+        makeDraggable(chatWindow);
+
+        socket.emit('get_chat_history', { user_id: userId });
+        socket.emit('mark_as_read', { sender_id: userId });
+
+        document.getElementById('chat-input-' + userId).addEventListener('keypress', function (e) {
+          if (e.key === 'Enter') {
+            sendMessageToUser(userId);
+          }
+        });
+      }
+
+      function closeChatWindow(userId) {
+        var window = openChatWindows[userId];
+        if (window) {
+          window.remove();
+          delete openChatWindows[userId];
+        }
+      }
+
+      function sendMessageToUser(userId) {
+        var input = document.getElementById('chat-input-' + userId);
+        var msg = input.value.trim();
+        if (msg) {
+          socket.emit('private_message', {
+            receiver_id: userId,
+            content: msg
+          });
+          input.value = '';
+        }
+      }
+
+      socket.on('chat_history', function (data) {
+        var messagesDiv = document.getElementById('messages-' + data.other_user_id);
+        if (messagesDiv) {
+          messagesDiv.innerHTML = '';
+
+          data.messages.forEach(function (msg) {
+            addMessageToWindow(data.other_user_id, msg);
+          });
+
+          messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+      });
+
+      socket.on('new_message', function (data) {
+        var otherUserId = data.sender_id === currentUserId ? data.receiver_id : data.sender_id;
+        var messagesDiv = document.getElementById('messages-' + otherUserId);
+
+        if (messagesDiv) {
+          addMessageToWindow(otherUserId, data);
+          messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+          if (data.receiver_id === currentUserId) {
+            socket.emit('mark_as_read', { sender_id: data.sender_id });
+          }
+        } else if (data.receiver_id === currentUserId) {
+          // Window is closed, show notification
+          startBlinking();
+
+          // Increment unread count
+          unreadMessages[data.sender_id] = (unreadMessages[data.sender_id] || 0) + 1;
+          updateUserListBadge(data.sender_id);
+
+          // Update header text
+          var headerSpan = chatHeader.querySelector('span:first-child');
+          headerSpan.innerText = '💬 Mensaje de ' + data.sender_name;
+        }
+      });
+
+      function addMessageToWindow(userId, msg) {
+        var messagesDiv = document.getElementById('messages-' + userId);
+        if (!messagesDiv) return;
+
+        var msgDiv = document.createElement('div');
+        msgDiv.className = 'mb-2';
+
+        var isOwnMessage = msg.sender_id === currentUserId;
+        msgDiv.style.textAlign = isOwnMessage ? 'right' : 'left';
+
+        var bgClass = isOwnMessage ? 'bg-primary text-white' : 'bg-light';
+        var timeClass = isOwnMessage ? 'text-white-50' : 'text-muted';
+
+        msgDiv.innerHTML = '<div class="d-inline-block p-2 rounded ' + bgClass + '" style="max-width: 80%;">' +
+          '<div>' + msg.content + '</div>' +
+          '<small class="' + timeClass + '" style="font-size: 0.7em;">' + msg.timestamp + '</small></div>';
+
+        messagesDiv.appendChild(msgDiv);
+      }
+
+      function makeDraggable(element) {
+        var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+        var header = element.querySelector('.chat-window-header');
+
+        header.onmousedown = dragMouseDown;
+
+        function dragMouseDown(e) {
+          e = e || window.event;
+          e.preventDefault();
+          pos3 = e.clientX;
+          pos4 = e.clientY;
+          document.onmouseup = closeDragElement;
+          document.onmousemove = elementDrag;
+          element.style.zIndex = 1000;
+        }
+
+        function elementDrag(e) {
+          e = e || window.event;
+          e.preventDefault();
+          pos1 = pos3 - e.clientX;
+          pos2 = pos4 - e.clientY;
+          pos3 = e.clientX;
+          pos4 = e.clientY;
+
+          var newTop = element.offsetTop - pos2;
+          var newLeft = element.offsetLeft - pos1;
+
+          element.style.top = newTop + "px";
+          element.style.left = newLeft + "px";
+          element.style.bottom = "auto";
+          element.style.right = "auto";
+        }
+
+        function closeDragElement() {
+          document.onmouseup = null;
+          document.onmousemove = null;
+        }
+      }
+
+      function updateUserListBadge(userId) {
+        var userDiv = document.getElementById('user-list-item-' + userId);
+        if (userDiv) {
+          var badge = userDiv.querySelector('.badge');
+          var count = unreadMessages[userId] || 0;
+
+          if (count > 0) {
+            if (badge) {
+              badge.innerText = count;
+            } else {
+              var container = userDiv.querySelector('.d-flex');
+              var newBadge = document.createElement('span');
+              newBadge.className = 'badge bg-danger rounded-pill ms-auto';
+              newBadge.innerText = count;
+              container.appendChild(newBadge);
+            }
+          } else if (badge) {
+            badge.remove();
+          }
+        }
+      }
+
+      function checkAllUnread() {
+        var totalUnread = 0;
+        for (var id in unreadMessages) {
+          totalUnread += unreadMessages[id];
+        }
+
+        if (totalUnread === 0) {
+          stopBlinking();
+          var headerSpan = chatHeader.querySelector('span:first-child');
+          headerSpan.innerText = '💬 Chat Privado';
+        }
+      }
+  </script>
+
+  {% endif %}
+  {% block scripts %}{% endblock %}
+</body>
+
+</html>

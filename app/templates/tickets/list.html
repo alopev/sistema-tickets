@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>{{ title }}</h2>
+    <a href="{{ url_for('main.create_ticket') }}" class="btn btn-primary">Nuevo Ticket</a>
+</div>
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>Número</th>
+            <th>Título</th>
+            <th>Estado</th>
+            <th>Prioridad</th>
+            <th>Creado Por</th>
+            <th>Asignado A</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for ticket in tickets %}
+        <tr>
+            <td><strong>{{ ticket.ticket_number }}</strong></td>
+            <td>{{ ticket.title }}</td>
+            <td>
+                <span
+                    class="badge bg-{{ 'danger' if ticket.status == 'abierto' else 'warning' if ticket.status == 'en_proceso' else 'success' }}">
+                    {{ ticket.status }}
+                </span>
+            </td>
+            <td>{{ ticket.priority }}</td>
+            <td>{{ ticket.created_by.username }}</td>
+            <td>{{ ticket.assigned_to.username if ticket.assigned_to else 'Sin asignar' }}</td>
+            <td>
+                <a href="{{ url_for('main.ticket_detail', id=ticket.id) }}" class="btn btn-sm btn-info">Ver</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

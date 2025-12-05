@@ -4,7 +4,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Sistema de Tickets</title>
+  <title>{{ system_settings.project_name }}</title>
+  <link rel="shortcut icon" href="{{ url_for('static', filename=system_settings.favicon_path) }}">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
@@ -79,13 +80,14 @@
 
     .btn:focus {
       transform: translateY(-1px);
-      box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.25);
-    }
 
-    .btn:active {
-      transform: translateY(0);
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
+      .bg-info {
+        background-color: var(--bs-info) !important;
+      }
+
+      .text-info {
+        color: var(--bs-info) !important;
+      }
   </style>
 </head>
 
@@ -93,7 +95,7 @@
   <!-- Enhanced Preloader -->
   <div id="preloader">
     <div class="logo-container">
-      <img src="{{ url_for('static', filename='logo.png') }}" alt="Loading..." width="100" class="mb-3">
+      <img src="{{ url_for('static', filename=system_settings.logo_path) }}" alt="Loading..." width="100" class="mb-3">
       <h5 class="text-muted">Cargando...</h5>
       <div class="progress-container">
         <div class="progress">
@@ -110,8 +112,9 @@
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
       <a class="navbar-brand d-flex align-items-center" href="{{ url_for('main.index') }}">
-        <img src="{{ url_for('static', filename='logo.png') }}" alt="Help Desk" height="40" class="me-2">
-        <span>HELP DESK</span>
+        <img src="{{ url_for('static', filename=system_settings.logo_path) }}" alt="{{ system_settings.project_name }}"
+          height="40" class="me-2">
+        <span>{{ system_settings.project_name }}</span>
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
@@ -125,6 +128,9 @@
           {% if current_user.role == 'admin' %}
           <li class="nav-item">
             <a class="nav-link" href="{{ url_for('admin.users') }}">Usuarios</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('admin.settings') }}">Configuración</a>
           </li>
           {% endif %}
           <li class="nav-item">

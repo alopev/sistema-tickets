@@ -128,3 +128,22 @@ class AuditLog(db.Model):
 @login.user_loader
 def load_user(id):
     return User.query.get(int(id))
+
+class SystemSettings(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    project_name = db.Column(db.String(100), default='Help Desk')
+    logo_path = db.Column(db.String(255), default='logo.png')
+    favicon_path = db.Column(db.String(255), default='favicon.ico')
+    primary_color = db.Column(db.String(20), default='#0d6efd') # Bootstrap Primary
+    secondary_color = db.Column(db.String(20), default='#0dcaf0') # Bootstrap Info
+    
+    # Dashboard Card Colors
+    card_total_color = db.Column(db.String(20), default='#0d6efd') # Primary
+    card_open_color = db.Column(db.String(20), default='#dc3545') # Danger
+    card_process_color = db.Column(db.String(20), default='#ffc107') # Warning
+    card_closed_color = db.Column(db.String(20), default='#198754') # Success
+
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<SystemSettings {self.project_name}>'

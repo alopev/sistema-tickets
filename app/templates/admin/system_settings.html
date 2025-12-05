@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-lg border-0 rounded-lg mt-5">
+            <div class="card-header bg-primary text-white">
+                <h3 class="text-center font-weight-light my-2">Configuración del Sistema</h3>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+                    <div class="mb-3">
+                        <label for="project_name" class="form-label">Nombre del Proyecto</label>
+                        <input type="text" class="form-control" id="project_name" name="project_name"
+                            value="{{ settings.project_name }}" required>
+                        <div class="form-text">Este nombre aparecerá en la barra de título y en el navegador.</div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <h5 class="mt-3">Colores del Sistema</h5>
+                        <div class="col-md-6">
+                            <label for="primary_color" class="form-label">Color Primario</label>
+                            <input type="color" class="form-control form-control-color w-100" id="primary_color"
+                                name="primary_color" value="{{ settings.primary_color }}"
+                                title="Elige el color primario">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="secondary_color" class="form-label">Color Secundario</label>
+                            <input type="color" class="form-control form-control-color w-100" id="secondary_color"
+                                name="secondary_color" value="{{ settings.secondary_color }}"
+                                title="Elige el color secundario">
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <h5 class="mt-3">Colores del Dashboard (Tarjetas)</h5>
+                        <div class="col-md-3">
+                            <label for="card_total_color" class="form-label">Total Tickets</label>
+                            <input type="color" class="form-control form-control-color w-100" id="card_total_color"
+                                name="card_total_color" value="{{ settings.card_total_color }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="card_open_color" class="form-label">Abiertos</label>
+                            <input type="color" class="form-control form-control-color w-100" id="card_open_color"
+                                name="card_open_color" value="{{ settings.card_open_color }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="card_process_color" class="form-label">En Proceso</label>
+                            <input type="color" class="form-control form-control-color w-100" id="card_process_color"
+                                name="card_process_color" value="{{ settings.card_process_color }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="card_closed_color" class="form-label">Cerrados</label>
+                            <input type="color" class="form-control form-control-color w-100" id="card_closed_color"
+                                name="card_closed_color" value="{{ settings.card_closed_color }}">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="logo" class="form-label">Logo del Sistema (Navbar)</label>
+                        <input class="form-control" type="file" id="logo" name="logo" accept="image/*">
+                        <div class="mt-2 p-2 bg-light rounded text-center">
+                            <img src="{{ url_for('static', filename=settings.logo_path) }}" alt="Logo Actual"
+                                style="max-height: 50px;">
+                            <small class="d-block text-muted">Logo actual</small>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="favicon" class="form-label">Favicon (Pestaña del Navegador)</label>
+                        <input class="form-control" type="file" id="favicon" name="favicon" accept=".ico,.png">
+                        <div class="mt-2 p-2 bg-light rounded text-center">
+                            <img src="{{ url_for('static', filename=settings.favicon_path) }}" alt="Favicon Actual"
+                                style="max-height: 32px;">
+                            <small class="d-block text-muted">Favicon actual</small>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg">Guardar Cambios</button>
+                        <a href="{{ url_for('main.index') }}" class="btn btn-outline-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Preview colors in real-time
+    document.getElementById('primary_color').addEventListener('input', function (e) {
+        document.documentElement.style.setProperty('--bs-primary', e.target.value);
+        document.querySelector('.card-header').style.backgroundColor = e.target.value;
+        document.querySelector('.btn-primary').style.backgroundColor = e.target.value;
+    });
+</script>
+{% endblock %}

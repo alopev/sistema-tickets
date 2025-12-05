@@ -132,3 +132,47 @@ def audit_logs():
                          user_filter=user_filter,
                          action_filter=action_filter,
                          days_filter=days_filter)
+
+@bp.route('/settings', methods=['GET', 'POST'])
+@admin_required
+def settings():
+    from app.models import SystemSettings
+    import os
+    from werkzeug.utils import secure_filename
+    from flask import current_app
+    
+    settings = SystemSettings.query.first()
+    if not settings:
+        settings = SystemSettings()
+        db.session.add(settings)
+        db.session.commit()
+    
+    if request.method == 'POST':
+        settings.project_name = request.form.get('project_name')
+        settings.primary_color = request.form.get('primary_color')
+        settings.secondary_color = request.form.get('secondary_color')
+
+        # Dashboard Card Colors
+        settings.card_total_color = request.form.get('card_total_color', '#0d6efd')
+        settings.card_open_color = request.form.get('card_open_color', '#dc3545')
+        settings.card_process_color = request.form.get('card_process_color', '#ffc107')
+        settings.card_closed_color = request.form.get('card_closed_color', '#198754')
+        
+        # Handle file uploads
+        logo = request.files.get('logo')
+        if logo and logo.filename:
+            filename = secure_filename(f"logo_{logo.filename}")
+            logo.save(os.path.join(current_app.root_path, 'static', filename))
+            settings.logo_path = filename
+            
+        favicon = request.files.get('favicon')
+        if favicon and favicon.filename:
+            filename = secure_filename(f"favicon_{favicon.filename}")
+            favicon.save(os.path.join(current_app.root_path, 'static', filename))
+            settings.favicon_path = filename
+            
+        db.session.commit()
+        success('Configuración actualizada exitosamente.')
+        return redirect(url_for('admin.settings'))
+        
+    return render_template('admin/system_settings.html', settings=settings)

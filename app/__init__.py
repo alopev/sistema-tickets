@@ -60,8 +60,13 @@ def create_app(config_class=Config):
 
     # Make get_alerts available in all templates
     from app.utils.alerts import get_alerts
+    from app.models import SystemSettings
     @app.context_processor
-    def inject_alerts():
-        return dict(get_alerts=get_alerts)
+    def inject_context():
+        settings = SystemSettings.query.first()
+        # Fallback if no settings yet (shouldn't happen due to update script, but good for safety)
+        if not settings:
+            settings = SystemSettings() 
+        return dict(get_alerts=get_alerts, system_settings=settings)
 
     return app

@@ -5,7 +5,7 @@
 
 <div class="row mt-4">
     <div class="col-md-3">
-        <div class="card text-white bg-primary mb-3">
+        <div class="card text-white mb-3" style="background-color: {{ system_settings.card_total_color }} !important;">
             <div class="card-header">Total Tickets</div>
             <div class="card-body">
                 <h5 class="card-title">{{ total }}</h5>
@@ -13,7 +13,7 @@
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card text-white bg-danger mb-3">
+        <div class="card text-white mb-3" style="background-color: {{ system_settings.card_open_color }} !important;">
             <div class="card-header">Abiertos</div>
             <div class="card-body">
                 <h5 class="card-title">{{ open }}</h5>
@@ -21,7 +21,8 @@
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card text-white bg-warning mb-3">
+        <div class="card text-white mb-3"
+            style="background-color: {{ system_settings.card_process_color }} !important;">
             <div class="card-header">En Proceso</div>
             <div class="card-body">
                 <h5 class="card-title">{{ process }}</h5>
@@ -29,7 +30,7 @@
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card text-white bg-success mb-3">
+        <div class="card text-white mb-3" style="background-color: {{ system_settings.card_closed_color }} !important;">
             <div class="card-header">Cerrados</div>
             <div class="card-body">
                 <h5 class="card-title">{{ closed }}</h5>

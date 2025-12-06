@@ -1,18 +1,39 @@
+# Core Flask Dependencies
 flask
 flask-sqlalchemy
 flask-login
 flask-mail
-mysql-connector-python
-pandas
-openpyxl
-fpdf2
-werkzeug
-email_validator
-flask-socketio
-pyjwt
-python-dotenv
 flask-wtf
 flask-limiter
-bleach
-eventlet
 flask-talisman
+flask-socketio
+eventlet
+
+# Database
+mysql-connector-python
+sqlalchemy
+
+# Utilities
+python-dotenv
+email-validator
+
+# Security
+bleach
+
+# Reports Generation
+# ================================================================================
+# IMPORTANTE: pandas requiere Python 64-bit
+# ================================================================================
+# Si tienes Python 32-bit, pandas puede fallar al instalarse o al ejecutarse.
+# Las funciones de exportación a Excel/CSV no funcionarán correctamente.
+# 
+# Para verificar tu versión de Python ejecuta:
+#   py scripts/check_python.py
+#
+# Si tienes 32-bit, descarga Python 64-bit desde:
+#   https://www.python.org/downloads/
+#   Busca: "Windows installer (64-bit)"
+# ================================================================================
+pandas          # Requerido para exportar a Excel/CSV
+openpyxl        # Requerido para exportar a Excel (.xlsx)
+fpdf2           # Requerido para exportar a PDF

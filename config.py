@@ -1,5 +1,9 @@
 import os
 from urllib.parse import quote_plus
+from dotenv import load_dotenv
+
+# Cargar variables de entorno desde .env
+load_dotenv()
 
 class Config:
     # Security: Use strong SECRET_KEY from environment
@@ -9,7 +13,7 @@ class Config:
     
     # Database configuration
     db_password = os.environ.get('DB_PASSWORD')
-    if not db_password:
+    if db_password is None:
         raise ValueError("DB_PASSWORD must be set in environment variables (.env file)")
     
     password = quote_plus(db_password)

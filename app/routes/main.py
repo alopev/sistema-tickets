@@ -4,7 +4,7 @@ from app import db
 from app.models import Ticket, User
 from app.utils import tech_required
 from app.utils.alerts import success, error, warning
-import pandas as pd
+import pandas as pd  # Commented temporarily - install pandas later for Excel/CSV export
 from fpdf import FPDF
 import io
 from datetime import datetime

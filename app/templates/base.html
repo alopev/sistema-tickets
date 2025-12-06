@@ -384,54 +384,39 @@
       }
     });
 
-    // Enhanced Preloader Logic with Progress Bar
+    // No Man's Sky Preloader Logic with Minimum Display Time
     (function () {
       const preloader = document.getElementById('preloader');
-      const progressBar = document.getElementById('progressBar');
       const progressText = document.getElementById('progressText');
-
-      // Only show preloader on:
-      // 1. First visit ever (localStorage check)
-      // 2. Explicit request after login (sessionStorage check)
-      const isFirstVisit = !localStorage.getItem('systemInitialized');
-      const showAfterLogin = sessionStorage.getItem('showPreloader') === 'true';
-
-      const shouldShowPreloader = isFirstVisit || showAfterLogin;
-
-      if (!shouldShowPreloader) {
-        // Hide preloader immediately
-        preloader.style.display = 'none';
-        return;
-      }
-
-      // Mark system as initialized (persists across sessions)
-      if (isFirstVisit) {
-        localStorage.setItem('systemInitialized', 'true');
-      }
-
-      // Clear the login flag
-      sessionStorage.removeItem('showPreloader');
-
-      // Run the progress animation
+      
+      // Always show preloader (for demo/testing purposes)
+      // Set to minimum 2.5 seconds to appreciate the animation
+      const minimumDisplayTime = 2500; // 2.5 seconds
+      const startTime = Date.now();
+      
+      // Run the progress animation (slower for better visual effect)
       let progress = 0;
       const interval = setInterval(() => {
-        progress += Math.random() * 15;
+        progress += Math.random() * 8; // Slower increment for smoother animation
         if (progress >= 100) {
           progress = 100;
           clearInterval(interval);
-
-          // Wait a bit before hiding to ensure user sees 100%
+          
+          // Calculate remaining time to meet minimum display
+          const elapsedTime = Date.now() - startTime;
+          const remainingTime = Math.max(0, minimumDisplayTime - elapsedTime);
+          
+          // Wait for remaining time before hiding
           setTimeout(() => {
             preloader.style.opacity = '0';
             setTimeout(() => {
               preloader.style.display = 'none';
             }, 500);
-          }, 300);
+          }, remainingTime);
         }
-
-        progressBar.style.width = progress + '%';
+        
         progressText.innerText = Math.floor(progress);
-      }, 200);
+      }, 150); // Update every 150ms for smoother animation
     })();
 
     // SweetAlert2 Handler for Flash Messages

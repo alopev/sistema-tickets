@@ -22,8 +22,332 @@
                 </form>
             </div>
         </div>
+
+        <!-- Preloader Selector -->
+        <div class="card mt-4">
+            <div class="card-header bg-dark text-white">
+                🎨 Selector de Preloader - Elige tu favorito
+            </div>
+            <div class="card-body">
+                <p class="text-muted">Prueba cada diseño de preloader y elige el que más te guste:</p>
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-primary" onclick="showPreloader(1)">
+                        🌀 Opción 1: Círculos Concéntricos (Actual)
+                    </button>
+                    <button class="btn btn-outline-success" onclick="showPreloader(2)">
+                        ⚡ Opción 2: Hexágono Pulsante
+                    </button>
+                    <button class="btn btn-outline-info" onclick="showPreloader(3)">
+                        🔷 Opción 3: Anillos Orbitales
+                    </button>
+                    <button class="btn btn-outline-warning" onclick="showPreloader(4)">
+                        💫 Opción 4: Partículas Convergentes
+                    </button>
+                    <button class="btn btn-outline-danger" onclick="showPreloader(5)">
+                        🌟 Opción 5: Estrella Geométrica
+                    </button>
+                </div>
+                <small class="text-muted d-block mt-3">
+                    Nota: Cada preloader se mostrará durante 5 segundos para que puedas apreciarlo completamente.
+                </small>
+            </div>
+        </div>
     </div>
 </div>
+
+<!-- Preloader Demo Container -->
+<div id="preloader-demo" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, #0a0a0a 0%, #000000 100%); z-index: 10000; transition: opacity 0.5s ease;">
+    <!-- Opción 1: Círculos Concéntricos (El actual) -->
+    <div id="preloader-1" class="preloader-option" style="display: none;">
+        <div style="position: relative; width: 200px; height: 200px; margin: auto; top: 50%; transform: translateY(-50%);">
+            <div class="nms-outer-ring">
+                <div class="nms-segment"></div>
+                <div class="nms-segment"></div>
+                <div class="nms-segment"></div>
+            </div>
+            <div class="nms-inner-ring"></div>
+            <div class="nms-core"></div>
+        </div>
+        <div style="text-align: center; margin-top: 40px; font-family: 'Courier New', monospace; font-size: 18px; color: #00d4ff; letter-spacing: 4px; text-transform: uppercase; text-shadow: 0 0 10px rgba(0, 212, 255, 0.8);">
+            CÍRCULOS CONCÉNTRICOS
+        </div>
+    </div>
+
+    <!-- Opción 2: Hexágono Pulsante -->
+    <div id="preloader-2" class="preloader-option" style="display: none;">
+        <div style="position: relative; width: 200px; height: 200px; margin: auto; top: 50%; transform: translateY(-50%);">
+            <div class="hex-loader">
+                <div class="hexagon"></div>
+                <div class="hexagon"></div>
+                <div class="hexagon"></div>
+            </div>
+        </div>
+        <div style="text-align: center; margin-top: 40px; font-family: 'Courier New', monospace; font-size: 18px; color: #ff6b35; letter-spacing: 4px; text-transform: uppercase; text-shadow: 0 0 10px rgba(255, 107, 53, 0.8);">
+            HEXÁGONO PULSANTE
+        </div>
+    </div>
+
+    <!-- Opción 3: Anillos Orbitales -->
+    <div id="preloader-3" class="preloader-option" style="display: none;">
+        <div style="position: relative; width: 200px; height: 200px; margin: auto; top: 50%; transform: translateY(-50%);">
+            <div class="orbital-ring orbital-1"></div>
+            <div class="orbital-ring orbital-2"></div>
+            <div class="orbital-ring orbital-3"></div>
+            <div class="orbital-center"></div>
+        </div>
+        <div style="text-align: center; margin-top: 40px; font-family: 'Courier New', monospace; font-size: 18px; color: #9d4edd; letter-spacing: 4px; text-transform: uppercase; text-shadow: 0 0 10px rgba(157, 78, 221, 0.8);">
+            ANILLOS ORBITALES
+        </div>
+    </div>
+
+    <!-- Opción 4: Partículas Convergentes -->
+    <div id="preloader-4" class="preloader-option" style="display: none;">
+        <div style="position: relative; width: 200px; height: 200px; margin: auto; top: 50%; transform: translateY(-50%);">
+            <div class="particle-loader">
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+            </div>
+            <div class="particle-core"></div>
+        </div>
+        <div style="text-align: center; margin-top: 40px; font-family: 'Courier New', monospace; font-size: 18px; color: #00d4ff; letter-spacing: 4px; text-transform: uppercase; text-shadow: 0 0 10px rgba(0, 212, 255, 0.8);">
+            PARTÍCULAS CONVERGENTES
+        </div>
+    </div>
+
+    <!-- Opción 5: Estrella Geométrica -->
+    <div id="preloader-5" class="preloader-option" style="display: none;">
+        <div style="position: relative; width: 200px; height: 200px; margin: auto; top: 50%; transform: translateY(-50%);">
+            <div class="star-loader">
+                <div class="star-point" style="--i: 0"></div>
+                <div class="star-point" style="--i: 1"></div>
+                <div class="star-point" style="--i: 2"></div>
+                <div class="star-point" style="--i: 3"></div>
+                <div class="star-point" style="--i: 4"></div>
+                <div class="star-point" style="--i: 5"></div>
+            </div>
+            <div class="star-center"></div>
+        </div>
+        <div style="text-align: center; margin-top: 40px; font-family: 'Courier New', monospace; font-size: 18px; color: #f7931e; letter-spacing: 4px; text-transform: uppercase; text-shadow: 0 0 10px rgba(247, 147, 30, 0.8);">
+            ESTRELLA GEOMÉTRICA
+        </div>
+    </div>
+</div>
+
+<style>
+/* Opción 1: Estilos ya definidos en base.html */
+
+/* Opción 2: Hexágono Pulsante */
+.hex-loader {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.hexagon {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    border: 3px solid #ff6b35;
+    animation: hexPulse 2s ease-in-out infinite, hexRotate 8s linear infinite, hexColor 4s ease-in-out infinite;
+}
+
+.hexagon:nth-child(2) {
+    transform: scale(0.7);
+    animation-delay: -0.66s;
+    border-color: #00d4ff;
+}
+
+.hexagon:nth-child(3) {
+    transform: scale(0.4);
+    animation-delay: -1.33s;
+    border-color: #9d4edd;
+}
+
+@keyframes hexPulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.7; }
+}
+
+@keyframes hexRotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes hexColor {
+    0%, 100% { border-color: #ff6b35; filter: drop-shadow(0 0 10px #ff6b35); }
+    33% { border-color: #00d4ff; filter: drop-shadow(0 0 10px #00d4ff); }
+    66% { border-color: #9d4edd; filter: drop-shadow(0 0 10px #9d4edd); }
+}
+
+/* Opción 3: Anillos Orbitales */
+.orbital-ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 2px solid;
+}
+
+.orbital-1 {
+    width: 100%;
+    height: 100%;
+    border-color: #ff6b35 transparent transparent transparent;
+    animation: orbit 3s linear infinite;
+}
+
+.orbital-2 {
+    width: 70%;
+    height: 70%;
+    top: 15%;
+    left: 15%;
+    border-color: transparent #00d4ff transparent transparent;
+    animation: orbit 2s linear infinite reverse;
+}
+
+.orbital-3 {
+    width: 40%;
+    height: 40%;
+    top: 30%;
+    left: 30%;
+    border-color: transparent transparent #9d4edd transparent;
+    animation: orbit 1.5s linear infinite;
+}
+
+.orbital-center {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle, #fff, #00d4ff);
+    border-radius: 50%;
+    box-shadow: 0 0 20px #00d4ff, 0 0 40px #00d4ff;
+    animation: centerGlow 2s ease-in-out infinite;
+}
+
+@keyframes orbit {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes centerGlow {
+    0%, 100% { box-shadow: 0 0 20px #00d4ff, 0 0 40px #00d4ff; }
+    50% { box-shadow: 0 0 40px #ff6b35, 0 0 80px #ff6b35; }
+}
+
+/* Opción 4: Partículas Convergentes */
+.particle-loader {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.particle {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: #00d4ff;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #00d4ff;
+    animation: particleMove 3s ease-in-out infinite;
+}
+
+.particle:nth-child(1) { top: 0; left: 50%; animation-delay: 0s; }
+.particle:nth-child(2) { top: 15%; right: 15%; animation-delay: -0.375s; }
+.particle:nth-child(3) { top: 50%; right: 0; animation-delay: -0.75s; }
+.particle:nth-child(4) { bottom: 15%; right: 15%; animation-delay: -1.125s; }
+.particle:nth-child(5) { bottom: 0; left: 50%; animation-delay: -1.5s; }
+.particle:nth-child(6) { bottom: 15%; left: 15%; animation-delay: -1.875s; }
+.particle:nth-child(7) { top: 50%; left: 0; animation-delay: -2.25s; }
+.particle:nth-child(8) { top: 15%; left: 15%; animation-delay: -2.625s; }
+
+@keyframes particleMove {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+    50% { transform: translate(calc(-50% + 50px - 100px), calc(-50% + 50px - 100px)) scale(0.3); opacity: 0.5; }
+}
+
+.particle-core {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle, rgba(0, 212, 255, 0.8), transparent);
+    border: 2px solid #00d4ff;
+    border-radius: 50%;
+    animation: coreRotate 2s ease-in-out infinite;
+    box-shadow: 0 0 30px #00d4ff, inset 0 0 20px #00d4ff;
+}
+
+@keyframes coreRotate {
+    0%, 100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+    50% { transform: translate(-50%, -50%) scale(1.2) rotate(180deg); }
+}
+
+/* Opción 5: Estrella Geométrica */
+.star-loader {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    animation: starRotate 6s linear infinite;
+}
+
+.star-point {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    transform: rotate(calc(var(--i) * 60deg));
+}
+
+.star-point::before {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 80px;
+    background: linear-gradient(to bottom, #f7931e, transparent);
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 3px;
+    box-shadow: 0 0 10px #f7931e;
+    animation: starGlow 2s ease-in-out infinite;
+    animation-delay: calc(var(--i) * -0.33s);
+}
+
+.star-center {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #f7931e;
+    border-radius: 50%;
+    box-shadow: 0 0 20px #f7931e, 0 0 40px #f7931e, inset 0 0 10px #fff;
+    animation: starPulse 2s ease-in-out infinite;
+}
+
+@keyframes starRotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes starGlow {
+    0%, 100% { opacity: 1; transform: translateX(-50%) scaleY(1); }
+    50% { opacity: 0.5; transform: translateX(-50%) scaleY(0.7); }
+}
+
+@keyframes starPulse {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); }
+    50% { transform: translate(-50%, -50%) scale(1.3); }
+}
+</style>
 {% endblock %}
 
 {% block scripts %}
@@ -32,5 +356,32 @@
   document.querySelector('form').addEventListener('submit', function() {
     sessionStorage.setItem('showPreloader', 'true');
   });
+
+  // Preloader demo function
+  function showPreloader(option) {
+    const demoContainer = document.getElementById('preloader-demo');
+    const allOptions = document.querySelectorAll('.preloader-option');
+    
+    // Hide all options first
+    allOptions.forEach(opt => opt.style.display = 'none');
+    
+    // Show selected option
+    document.getElementById('preloader-' + option).style.display = 'block';
+    
+    // Show demo container
+    demoContainer.style.display = 'flex';
+    demoContainer.style.flexDirection = 'column';
+    demoContainer.style.justifyContent = 'center';
+    demoContainer.style.alignItems = 'center';
+    demoContainer.style.opacity = '1';
+    
+    // Hide after 5 seconds
+    setTimeout(() => {
+      demoContainer.style.opacity = '0';
+      setTimeout(() => {
+        demoContainer.style.display = 'none';
+      }, 500);
+    }, 5000);
+  }
 </script>
 {% endblock %}

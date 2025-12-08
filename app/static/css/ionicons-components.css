@@ -1,0 +1,124 @@
+/* ========================
+   FONT AWESOME ICONS STYLING
+   ======================== */
+.fa-solid {
+    font-size: 20px;
+    width: 22px;
+    height: 22px;
+    display: inline-block;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.sidebar-icon .fa-solid {
+    font-size: 20px;
+}
+
+body.sidebar-collapsed .sidebar-icon .fa-solid {
+    font-size: 22px;
+}
+
+/* Topbar icons */
+.sidebar-toggle .fa-solid {
+    font-size: 18px;
+}
+
+.search-btn .fa-solid {
+    font-size: 16px;
+}
+
+.pill-time .fa-solid {
+    font-size: 14px;
+}
+
+/* ========================
+   ACTION BUTTONS
+   ======================== */
+.actions-card-body {
+    padding: 12px;
+}
+
+.actions-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.action-btn {
+    height: 38px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 13px;
+    display: grid;
+    place-items: center;
+    text-decoration: none;
+    border: 1px solid rgba(2, 6, 23, .08);
+    background: #ffffff;
+    color: var(--text-title);
+    transition: .12s ease;
+}
+
+.action-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(2, 6, 23, .06);
+}
+
+.btn-excel {
+    border-color: rgba(22, 163, 74, .25);
+    color: #0f6b33;
+}
+
+.btn-pdf {
+    border-color: rgba(239, 68, 68, .25);
+    color: #9f1d1d;
+}
+
+.btn-csv {
+    border-color: rgba(6, 182, 212, .25);
+    color: #0b7285;
+}
+
+/* ========================
+   FLOATING CHAT (F7 STYLE)
+   ======================== */
+#chat-widget .card {
+    background: #1b66f9;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 10px 26px rgba(2, 6, 23, .18);
+    overflow: hidden;
+}
+
+#chat-widget .card-header {
+    background: #1b66f9 !important;
+    color: #fff !important;
+    border: none !important;
+    padding: 10px 14px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .15s;
+}
+
+#chat-widget .card-header:hover {
+    background: #1557d6 !important;
+}
+
+#chat-widget .card-body {
+    background: #fff;
+    padding: 10px;
+}
+
+#chat-widget #chat-toggle-icon {
+    font-weight: 900;
+    opacity: .9;
+}
+
+/* ========================
+   RESPONSIVE
+   ======================== */
+@media (max-width: 1200px) {
+    .actions-grid {
+        grid-template-columns: 1fr;
+    }
+}

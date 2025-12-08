@@ -1,387 +1,449 @@
-{% extends "base.html" %}
+{% extends "layouts/base_layout.html" %}
 
-{% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header">Iniciar Sesión</div>
-            <div class="card-body">
-                <form action="" method="post">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    <div class="mb-3">
-                        <label for="username" class="form-label">Usuario</label>
-                        <input type="text" class="form-control" id="username" name="username" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Contraseña</label>
-                        <input type="password" class="form-control" id="password" name="password" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Ingresar</button>
-                    <a href="{{ url_for('auth.reset_password_request') }}" class="btn btn-link">¿Olvidaste tu
-                        contraseña?</a>
-                </form>
-            </div>
-        </div>
+{% block title %}Iniciar Sesión - {{ system_settings.project_name if system_settings else 'Mesa de Servicio' }}{%
+endblock %}
 
-        <!-- Preloader Selector -->
-        <div class="card mt-4">
-            <div class="card-header bg-dark text-white">
-                🎨 Selector de Preloader - Elige tu favorito
-            </div>
-            <div class="card-body">
-                <p class="text-muted">Prueba cada diseño de preloader y elige el que más te guste:</p>
-                <div class="d-grid gap-2">
-                    <button class="btn btn-outline-primary" onclick="showPreloader(1)">
-                        🌀 Opción 1: Círculos Concéntricos (Actual)
-                    </button>
-                    <button class="btn btn-outline-success" onclick="showPreloader(2)">
-                        ⚡ Opción 2: Hexágono Pulsante
-                    </button>
-                    <button class="btn btn-outline-info" onclick="showPreloader(3)">
-                        🔷 Opción 3: Anillos Orbitales
-                    </button>
-                    <button class="btn btn-outline-warning" onclick="showPreloader(4)">
-                        💫 Opción 4: Partículas Convergentes
-                    </button>
-                    <button class="btn btn-outline-danger" onclick="showPreloader(5)">
-                        🌟 Opción 5: Estrella Geométrica
-                    </button>
-                </div>
-                <small class="text-muted d-block mt-3">
-                    Nota: Cada preloader se mostrará durante 5 segundos para que puedas apreciarlo completamente.
-                </small>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Preloader Demo Container -->
-<div id="preloader-demo" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, #0a0a0a 0%, #000000 100%); z-index: 10000; transition: opacity 0.5s ease;">
-    <!-- Opción 1: Círculos Concéntricos (El actual) -->
-    <div id="preloader-1" class="preloader-option" style="display: none;">
-        <div style="position: relative; width: 200px; height: 200px; margin: auto; top: 50%; transform: translateY(-50%);">
-            <div class="nms-outer-ring">
-                <div class="nms-segment"></div>
-                <div class="nms-segment"></div>
-                <div class="nms-segment"></div>
-            </div>
-            <div class="nms-inner-ring"></div>
-            <div class="nms-core"></div>
-        </div>
-        <div style="text-align: center; margin-top: 40px; font-family: 'Courier New', monospace; font-size: 18px; color: #00d4ff; letter-spacing: 4px; text-transform: uppercase; text-shadow: 0 0 10px rgba(0, 212, 255, 0.8);">
-            CÍRCULOS CONCÉNTRICOS
-        </div>
-    </div>
-
-    <!-- Opción 2: Hexágono Pulsante -->
-    <div id="preloader-2" class="preloader-option" style="display: none;">
-        <div style="position: relative; width: 200px; height: 200px; margin: auto; top: 50%; transform: translateY(-50%);">
-            <div class="hex-loader">
-                <div class="hexagon"></div>
-                <div class="hexagon"></div>
-                <div class="hexagon"></div>
-            </div>
-        </div>
-        <div style="text-align: center; margin-top: 40px; font-family: 'Courier New', monospace; font-size: 18px; color: #ff6b35; letter-spacing: 4px; text-transform: uppercase; text-shadow: 0 0 10px rgba(255, 107, 53, 0.8);">
-            HEXÁGONO PULSANTE
-        </div>
-    </div>
-
-    <!-- Opción 3: Anillos Orbitales -->
-    <div id="preloader-3" class="preloader-option" style="display: none;">
-        <div style="position: relative; width: 200px; height: 200px; margin: auto; top: 50%; transform: translateY(-50%);">
-            <div class="orbital-ring orbital-1"></div>
-            <div class="orbital-ring orbital-2"></div>
-            <div class="orbital-ring orbital-3"></div>
-            <div class="orbital-center"></div>
-        </div>
-        <div style="text-align: center; margin-top: 40px; font-family: 'Courier New', monospace; font-size: 18px; color: #9d4edd; letter-spacing: 4px; text-transform: uppercase; text-shadow: 0 0 10px rgba(157, 78, 221, 0.8);">
-            ANILLOS ORBITALES
-        </div>
-    </div>
-
-    <!-- Opción 4: Partículas Convergentes -->
-    <div id="preloader-4" class="preloader-option" style="display: none;">
-        <div style="position: relative; width: 200px; height: 200px; margin: auto; top: 50%; transform: translateY(-50%);">
-            <div class="particle-loader">
-                <div class="particle"></div>
-                <div class="particle"></div>
-                <div class="particle"></div>
-                <div class="particle"></div>
-                <div class="particle"></div>
-                <div class="particle"></div>
-                <div class="particle"></div>
-                <div class="particle"></div>
-            </div>
-            <div class="particle-core"></div>
-        </div>
-        <div style="text-align: center; margin-top: 40px; font-family: 'Courier New', monospace; font-size: 18px; color: #00d4ff; letter-spacing: 4px; text-transform: uppercase; text-shadow: 0 0 10px rgba(0, 212, 255, 0.8);">
-            PARTÍCULAS CONVERGENTES
-        </div>
-    </div>
-
-    <!-- Opción 5: Estrella Geométrica -->
-    <div id="preloader-5" class="preloader-option" style="display: none;">
-        <div style="position: relative; width: 200px; height: 200px; margin: auto; top: 50%; transform: translateY(-50%);">
-            <div class="star-loader">
-                <div class="star-point" style="--i: 0"></div>
-                <div class="star-point" style="--i: 1"></div>
-                <div class="star-point" style="--i: 2"></div>
-                <div class="star-point" style="--i: 3"></div>
-                <div class="star-point" style="--i: 4"></div>
-                <div class="star-point" style="--i: 5"></div>
-            </div>
-            <div class="star-center"></div>
-        </div>
-        <div style="text-align: center; margin-top: 40px; font-family: 'Courier New', monospace; font-size: 18px; color: #f7931e; letter-spacing: 4px; text-transform: uppercase; text-shadow: 0 0 10px rgba(247, 147, 30, 0.8);">
-            ESTRELLA GEOMÉTRICA
-        </div>
-    </div>
-</div>
-
+{% block extra_head %}
 <style>
-/* Opción 1: Estilos ya definidos en base.html */
+    /* 3D Boxes Loader Preloader (from current system) */
+    :root {
+        --box-size: 32px;
+        --gutter: 4px;
+        --duration: 1600ms;
+        --primary: #275EFE;
+        --primary-light: #2f71ff;
+    }
 
-/* Opción 2: Hexágono Pulsante */
-.hex-loader {
-    position: relative;
-    width: 100%;
-    height: 100%;
-}
+    #preloader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: var(--topbar-bg, #1b1f24);
+        z-index: 9999;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        transition: opacity 0.5s ease;
+        overflow: hidden;
+    }
 
-.hexagon {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-    border: 3px solid #ff6b35;
-    animation: hexPulse 2s ease-in-out infinite, hexRotate 8s linear infinite, hexColor 4s ease-in-out infinite;
-}
+    /* 3D Boxes Container */
+    .loader-3d {
+        position: relative;
+        width: calc(var(--box-size) * 4 + var(--gutter) * 6);
+        height: calc(var(--box-size) * 2 + var(--gutter) * 4);
+        transform-style: preserve-3d;
+        transform: rotateX(-20deg) rotateY(-45deg);
+        z-index: 1;
+    }
 
-.hexagon:nth-child(2) {
-    transform: scale(0.7);
-    animation-delay: -0.66s;
-    border-color: #00d4ff;
-}
+    /* Individual Box */
+    .box {
+        position: absolute;
+        width: var(--box-size);
+        height: var(--box-size);
+        border-radius: 4px;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+        transform-style: preserve-3d;
+        animation: flip var(--duration) cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+        box-shadow: 0 0 20px rgba(39, 94, 254, 0.4);
+    }
 
-.hexagon:nth-child(3) {
-    transform: scale(0.4);
-    animation-delay: -1.33s;
-    border-color: #9d4edd;
-}
+    /* Box Positioning */
+    .box0 {
+        left: calc(var(--box-size) * 0 + var(--gutter) * 0);
+        top: calc(var(--box-size) * 0 + var(--gutter) * 0);
+        animation-delay: calc(var(--duration) * -0.875);
+    }
 
-@keyframes hexPulse {
-    0%, 100% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.1); opacity: 0.7; }
-}
+    .box1 {
+        left: calc(var(--box-size) * 1 + var(--gutter) * 2);
+        top: calc(var(--box-size) * 0 + var(--gutter) * 0);
+        animation-delay: calc(var(--duration) * -0.75);
+    }
 
-@keyframes hexRotate {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
+    .box2 {
+        left: calc(var(--box-size) * 2 + var(--gutter) * 4);
+        top: calc(var(--box-size) * 0 + var(--gutter) * 0);
+        animation-delay: calc(var(--duration) * -0.625);
+    }
 
-@keyframes hexColor {
-    0%, 100% { border-color: #ff6b35; filter: drop-shadow(0 0 10px #ff6b35); }
-    33% { border-color: #00d4ff; filter: drop-shadow(0 0 10px #00d4ff); }
-    66% { border-color: #9d4edd; filter: drop-shadow(0 0 10px #9d4edd); }
-}
+    .box3 {
+        left: calc(var(--box-size) * 3 + var(--gutter) * 6);
+        top: calc(var(--box-size) * 0 + var(--gutter) * 0);
+        animation-delay: calc(var(--duration) * -0.5);
+    }
 
-/* Opción 3: Anillos Orbitales */
-.orbital-ring {
-    position: absolute;
-    border-radius: 50%;
-    border: 2px solid;
-}
+    .box4 {
+        left: calc(var(--box-size) * 0 + var(--gutter) * 0);
+        top: calc(var(--box-size) * 1 + var(--gutter) * 2);
+        animation-delay: calc(var(--duration) * -0.375);
+    }
 
-.orbital-1 {
-    width: 100%;
-    height: 100%;
-    border-color: #ff6b35 transparent transparent transparent;
-    animation: orbit 3s linear infinite;
-}
+    .box5 {
+        left: calc(var(--box-size) * 1 + var(--gutter) * 2);
+        top: calc(var(--box-size) * 1 + var(--gutter) * 2);
+        animation-delay: calc(var(--duration) * -0.25);
+    }
 
-.orbital-2 {
-    width: 70%;
-    height: 70%;
-    top: 15%;
-    left: 15%;
-    border-color: transparent #00d4ff transparent transparent;
-    animation: orbit 2s linear infinite reverse;
-}
+    .box6 {
+        left: calc(var(--box-size) * 2 + var(--gutter) * 4);
+        top: calc(var(--box-size) * 1 + var(--gutter) * 2);
+        animation-delay: calc(var(--duration) * -0.125);
+    }
 
-.orbital-3 {
-    width: 40%;
-    height: 40%;
-    top: 30%;
-    left: 30%;
-    border-color: transparent transparent #9d4edd transparent;
-    animation: orbit 1.5s linear infinite;
-}
+    .box7 {
+        left: calc(var(--box-size) * 3 + var(--gutter) * 6);
+        top: calc(var(--box-size) * 1 + var(--gutter) * 2);
+        animation-delay: calc(var(--duration) * 0);
+    }
 
-.orbital-center {
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: radial-gradient(circle, #fff, #00d4ff);
-    border-radius: 50%;
-    box-shadow: 0 0 20px #00d4ff, 0 0 40px #00d4ff;
-    animation: centerGlow 2s ease-in-out infinite;
-}
+    /* Ground Shadow */
+    .ground {
+        position: absolute;
+        left: -10%;
+        top: 100%;
+        width: 120%;
+        height: 120%;
+        transform: rotateX(90deg);
+        background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.6) 0%, transparent 60%);
+        filter: blur(20px);
+    }
 
-@keyframes orbit {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
+    /* Loading text */
+    .nms-loading-text {
+        margin-top: 80px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        font-size: 20px;
+        font-weight: 600;
+        color: white;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        text-shadow:
+            -1px -1px 0 #000,
+            1px -1px 0 #000,
+            -1px 1px 0 #000,
+            1px 1px 0 #000,
+            0 0 15px rgba(255, 255, 255, 0.6);
+        animation: textBreathing 3s ease-in-out infinite;
+    }
 
-@keyframes centerGlow {
-    0%, 100% { box-shadow: 0 0 20px #00d4ff, 0 0 40px #00d4ff; }
-    50% { box-shadow: 0 0 40px #ff6b35, 0 0 80px #ff6b35; }
-}
+    /* Progress percentage */
+    .nms-progress-text {
+        margin-top: 15px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        font-size: 16px;
+        font-weight: 600;
+        color: white;
+        letter-spacing: 2px;
+        text-shadow:
+            -1px -1px 0 #000,
+            1px -1px 0 #000,
+            -1px 1px 0 #000,
+            1px 1px 0 #000;
+    }
 
-/* Opción 4: Partículas Convergentes */
-.particle-loader {
-    position: relative;
-    width: 100%;
-    height: 100%;
-}
+    /* 3D Flip Animation */
+    @keyframes flip {
+        0% {
+            transform: rotateY(0deg) rotateX(0deg) translateZ(0);
+        }
 
-.particle {
-    position: absolute;
-    width: 12px;
-    height: 12px;
-    background: #00d4ff;
-    border-radius: 50%;
-    box-shadow: 0 0 10px #00d4ff;
-    animation: particleMove 3s ease-in-out infinite;
-}
+        25% {
+            transform: rotateY(90deg) rotateX(0deg) translateZ(0);
+        }
 
-.particle:nth-child(1) { top: 0; left: 50%; animation-delay: 0s; }
-.particle:nth-child(2) { top: 15%; right: 15%; animation-delay: -0.375s; }
-.particle:nth-child(3) { top: 50%; right: 0; animation-delay: -0.75s; }
-.particle:nth-child(4) { bottom: 15%; right: 15%; animation-delay: -1.125s; }
-.particle:nth-child(5) { bottom: 0; left: 50%; animation-delay: -1.5s; }
-.particle:nth-child(6) { bottom: 15%; left: 15%; animation-delay: -1.875s; }
-.particle:nth-child(7) { top: 50%; left: 0; animation-delay: -2.25s; }
-.particle:nth-child(8) { top: 15%; left: 15%; animation-delay: -2.625s; }
+        50% {
+            transform: rotateY(180deg) rotateX(0deg) translateZ(0);
+        }
 
-@keyframes particleMove {
-    0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-    50% { transform: translate(calc(-50% + 50px - 100px), calc(-50% + 50px - 100px)) scale(0.3); opacity: 0.5; }
-}
+        75% {
+            transform: rotateY(270deg) rotateX(0deg) translateZ(0);
+        }
 
-.particle-core {
-    position: absolute;
-    width: 40px;
-    height: 40px;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: radial-gradient(circle, rgba(0, 212, 255, 0.8), transparent);
-    border: 2px solid #00d4ff;
-    border-radius: 50%;
-    animation: coreRotate 2s ease-in-out infinite;
-    box-shadow: 0 0 30px #00d4ff, inset 0 0 20px #00d4ff;
-}
+        100% {
+            transform: rotateY(360deg) rotateX(0deg) translateZ(0);
+        }
+    }
 
-@keyframes coreRotate {
-    0%, 100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
-    50% { transform: translate(-50%, -50%) scale(1.2) rotate(180deg); }
-}
+    @keyframes textBreathing {
 
-/* Opción 5: Estrella Geométrica */
-.star-loader {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    animation: starRotate 6s linear infinite;
-}
+        0%,
+        100% {
+            opacity: 1;
+            transform: scale(1);
+            text-shadow:
+                -1px -1px 0 #000,
+                1px -1px 0 #000,
+                -1px 1px 0 #000,
+                1px 1px 0 #000,
+                0 0 15px rgba(255, 255, 255, 0.6);
+        }
 
-.star-point {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    transform: rotate(calc(var(--i) * 60deg));
-}
+        50% {
+            opacity: 0.6;
+            transform: scale(0.95);
+            text-shadow:
+                -1px -1px 0 #000,
+                1px -1px 0 #000,
+                -1px 1px 0 #000,
+                1px 1px 0 #000,
+                0 0 25px rgba(255, 255, 255, 0.9);
+        }
+    }
 
-.star-point::before {
-    content: '';
-    position: absolute;
-    width: 6px;
-    height: 80px;
-    background: linear-gradient(to bottom, #f7931e, transparent);
-    left: 50%;
-    transform: translateX(-50%);
-    border-radius: 3px;
-    box-shadow: 0 0 10px #f7931e;
-    animation: starGlow 2s ease-in-out infinite;
-    animation-delay: calc(var(--i) * -0.33s);
-}
+    /* Login Container */
+    .login-container {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 20px;
+    }
 
-.star-center {
-    position: absolute;
-    width: 30px;
-    height: 30px;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: #f7931e;
-    border-radius: 50%;
-    box-shadow: 0 0 20px #f7931e, 0 0 40px #f7931e, inset 0 0 10px #fff;
-    animation: starPulse 2s ease-in-out infinite;
-}
+    .login-card {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 16px;
+        padding: 40px;
+        max-width: 420px;
+        width: 100%;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        backdrop-filter: blur(10px);
+    }
 
-@keyframes starRotate {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
+    .login-header {
+        text-align: center;
+        margin-bottom: 32px;
+    }
 
-@keyframes starGlow {
-    0%, 100% { opacity: 1; transform: translateX(-50%) scaleY(1); }
-    50% { opacity: 0.5; transform: translateX(-50%) scaleY(0.7); }
-}
+    .login-logo {
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 16px;
+        background: var(--topbar-bg);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        font-weight: 800;
+        color: #dbeafe;
+    }
 
-@keyframes starPulse {
-    0%, 100% { transform: translate(-50%, -50%) scale(1); }
-    50% { transform: translate(-50%, -50%) scale(1.3); }
-}
+    .login-title {
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--text-title);
+        margin: 0 0 8px 0;
+    }
+
+    .login-subtitle {
+        font-size: 14px;
+        color: var(--text-muted);
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-soft);
+        margin-bottom: 8px;
+    }
+
+    .form-input {
+        width: 100%;
+        height: 44px;
+        padding: 0 14px;
+        font-size: 15px;
+        border: 1px solid rgba(2, 6, 23, 0.15);
+        border-radius: 8px;
+        outline: none;
+        transition: all 0.2s;
+        background: white;
+    }
+
+    .form-input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(39, 94, 254, 0.1);
+    }
+
+    .btn-login {
+        width: 100%;
+        height: 44px;
+        background: linear-gradient(135deg, #275EFE 0%, #1b66f9 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        margin-top: 8px;
+    }
+
+    .btn-login:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(39, 94, 254, 0.3);
+    }
+
+    .btn-login:active {
+        transform: translateY(0);
+    }
+
+    .login-footer {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .login-link {
+        color: var(--primary);
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    .login-link:hover {
+        text-decoration: underline;
+    }
 </style>
 {% endblock %}
 
-{% block scripts %}
-<script>
-  // Show preloader when login form is submitted
-  document.querySelector('form').addEventListener('submit', function() {
-    sessionStorage.setItem('showPreloader', 'true');
-  });
+{% block body_content %}
+<!-- 3D Boxes Preloader (shown on page load) -->
+<div id="preloader">
+    <div class="loader-3d">
+        <div class="box box0"></div>
+        <div class="box box1"></div>
+        <div class="box box2"></div>
+        <div class="box box3"></div>
+        <div class="box box4"></div>
+        <div class="box box5"></div>
+        <div class="box box6"></div>
+        <div class="box box7"></div>
+        <div class="ground">
+            <div></div>
+        </div>
+    </div>
+    <div class="nms-loading-text">Cargando</div>
+    <div class="nms-progress-text"><span id="progressText">0</span>%</div>
+</div>
 
-  // Preloader demo function
-  function showPreloader(option) {
-    const demoContainer = document.getElementById('preloader-demo');
-    const allOptions = document.querySelectorAll('.preloader-option');
-    
-    // Hide all options first
-    allOptions.forEach(opt => opt.style.display = 'none');
-    
-    // Show selected option
-    document.getElementById('preloader-' + option).style.display = 'block';
-    
-    // Show demo container
-    demoContainer.style.display = 'flex';
-    demoContainer.style.flexDirection = 'column';
-    demoContainer.style.justifyContent = 'center';
-    demoContainer.style.alignItems = 'center';
-    demoContainer.style.opacity = '1';
-    
-    // Hide after 5 seconds
-    setTimeout(() => {
-      demoContainer.style.opacity = '0';
-      setTimeout(() => {
-        demoContainer.style.display = 'none';
-      }, 500);
-    }, 5000);
-  }
+<!-- Login Container -->
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-header">
+            <div class="login-logo">
+                {% if system_settings and system_settings.project_name %}
+                {{ system_settings.project_name[:2].upper() }}
+                {% else %}
+                MS
+                {% endif %}
+            </div>
+            <h1 class="login-title">{{ system_settings.project_name if system_settings else 'Mesa de Servicio' }}</h1>
+            <p class="login-subtitle">Inicia sesión para continuar</p>
+        </div>
+
+        <form action="" method="post" id="loginForm">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <div class="form-group">
+                <label for="username" class="form-label">Usuario</label>
+                <input type="text" class="form-input" id="username" name="username" required autofocus>
+            </div>
+
+            <div class="form-group">
+                <label for="password" class="form-label">Contraseña</label>
+                <input type="password" class="form-input" id="password" name="password" required>
+            </div>
+
+            <button type="submit" class="btn-login">Ingresar</button>
+        </form>
+
+        <div class="login-footer">
+            <a href="{{ url_for('auth.reset_password_request') }}" class="login-link">
+                ¿Olvidaste tu contraseña?
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    (function () {
+        'use strict';
+
+        const preloader = document.getElementById('preloader');
+        const progressText = document.getElementById('progressText');
+
+        if (!preloader || !progressText) {
+            console.error('Preloader elements not found');
+            return;
+        }
+
+        // Set minimum display time (2 seconds)
+        const minimumDisplayTime = 2000;
+        const startTime = Date.now();
+
+        // Animate progress on page load
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += Math.random() * 8;
+            if (progress >= 100) {
+                progress = 100;
+                clearInterval(interval);
+
+                // Calculate remaining time
+                const elapsedTime = Date.now() - startTime;
+                const remainingTime = Math.max(0, minimumDisplayTime - elapsedTime);
+
+                // Hide preloader after minimum time
+                setTimeout(() => {
+                    preloader.style.opacity = '0';
+                    setTimeout(() => {
+                        preloader.style.display = 'none';
+                    }, 500);
+                }, remainingTime);
+            }
+            progressText.innerText = Math.floor(progress);
+        }, 150);
+    })();
+
+    // Show preloader when login form is submitted
+    const loginForm = document.getElementById('loginForm');
+    if (loginForm) {
+        loginForm.addEventListener('submit', function (e) {
+            const preloader = document.getElementById('preloader');
+            const progressText = document.getElementById('progressText');
+
+            if (preloader && progressText) {
+                preloader.style.display = 'flex';
+                preloader.style.opacity = '1';
+
+                // Animate progress
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += Math.random() * 15;
+                    if (progress >= 100) {
+                        progress = 100;
+                        clearInterval(interval);
+                    }
+                    progressText.innerText = Math.floor(progress);
+                }, 100);
+
+                // Set sessionStorage flag for dashboard preloader continuation
+                sessionStorage.setItem('showPreloader', 'true');
+            }
+        });
+    }
 </script>
 {% endblock %}

@@ -1,0 +1,84 @@
+/* Action Buttons and Chat - From dashboard-hibrido example */
+
+/* Action Buttons */
+.actions-card-body {
+    padding: 12px;
+}
+
+.actions-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.action-btn {
+    height: 38px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 13px;
+    display: grid;
+    place-items: center;
+    text-decoration: none;
+    border: 1px solid rgba(2, 6, 23, .08);
+    background: #ffffff;
+    color: var(--text-title);
+    transition: .12s ease;
+}
+
+.action-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(2, 6, 23, .06);
+}
+
+.btn-excel {
+    border-color: rgba(22, 163, 74, .25);
+    color: #0f6b33;
+}
+
+.btn-pdf {
+    border-color: rgba(239, 68, 68, .25);
+    color: #9f1d1d;
+}
+
+.btn-csv {
+    border-color: rgba(6, 182, 212, .25);
+    color: #0b7285;
+}
+
+/* Floating Chat */
+.floating-chat {
+    position: fixed;
+    right: 22px;
+    bottom: 20px;
+    background: #1b66f9;
+    color: #fff;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+    font-weight: 700;
+    box-shadow: 0 10px 26px rgba(2, 6, 23, .18);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 5;
+    cursor: pointer;
+    transition: .15s ease;
+}
+
+.floating-chat:hover {
+    transform: scale(1.02);
+    box-shadow: 0 12px 30px rgba(2, 6, 23, .22);
+}
+
+.floating-chat .plus {
+    margin-left: 6px;
+    font-weight: 900;
+    opacity: .9;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+    .actions-grid {
+        grid-template-columns: 1fr;
+    }
+}

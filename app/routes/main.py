@@ -203,6 +203,39 @@ def ticket_detail(id):
             
     return render_template('tickets/detail.html', ticket=ticket, technicians=technicians)
 
+@bp.route('/tickets/<int:id>/details')
+@login_required
+def ticket_details_json(id):
+    """Return ticket details as JSON for AJAX loading in modal"""
+    ticket = Ticket.query.get_or_404(id)
+    
+    # Map status to Spanish
+    status_labels = {
+        'abierto': 'Abierto',
+        'en_proceso': 'En Proceso',
+        'cerrado': 'Cerrado'
+    }
+    
+    return {
+        'ticket_number': ticket.ticket_number,
+        'title': ticket.title,
+        'description': ticket.description,
+        'status': ticket.status,
+        'status_label': status_labels.get(ticket.status, ticket.status),
+        'priority': ticket.priority.capitalize() if ticket.priority else 'Media',
+        'created_by': ticket.created_by.username,
+        'created_at': ticket.created_at.strftime('%d/%m/%Y %H:%M'),
+        'assigned_to': ticket.assigned_to.username if ticket.assigned_to else None,
+        'assigned_to_id': ticket.assigned_to_id
+    }
+
+@bp.route('/api/technicians')
+@login_required
+def get_technicians():
+    """Return list of technicians for dropdown in edit modal"""
+    technicians = User.query.filter_by(role='tecnico').all()
+    return [{'id': t.id, 'username': t.username, 'role': t.role} for t in technicians]
+
 @bp.route('/ticket/<int:id>/comment', methods=['POST'])
 @login_required
 def add_comment(id):

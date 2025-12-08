@@ -1,0 +1,72 @@
+<!-- Sidebar Component -->
+<aside class="sidebar" aria-label="Navegación lateral">
+    <div class="sidebar-section">Principal</div>
+
+    <a class="sidebar-item {% if request.endpoint == 'main.index' %}active{% endif %}"
+        href="{{ url_for('main.index') }}" {% if request.endpoint=='main.index' %}aria-current="page" {% endif %}
+        title="Dashboard">
+        <span class="sidebar-icon">
+            <i class="fa-solid fa-table-cells"></i>
+        </span>
+        <span class="sidebar-text">Dashboard</span>
+    </a>
+
+    <a class="sidebar-item {% if request.endpoint and 'tickets' in request.endpoint %}active{% endif %}"
+        href="{{ url_for('main.tickets') }}" title="Tickets">
+        <span class="sidebar-icon">
+            <i class="fa-solid fa-ticket"></i>
+        </span>
+        <span class="sidebar-text">Tickets</span>
+        {% if ticket_count is defined and ticket_count > 0 %}
+        <span class="sidebar-badge">{{ ticket_count }}</span>
+        {% endif %}
+    </a>
+
+    {% if current_user and current_user.role == 'admin' %}
+    <a class="sidebar-item {% if request.endpoint == 'admin.users' %}active{% endif %}"
+        href="{{ url_for('admin.users') }}" title="Usuarios">
+        <span class="sidebar-icon">
+            <i class="fa-solid fa-users"></i>
+        </span>
+        <span class="sidebar-text">Usuarios</span>
+    </a>
+    {% endif %}
+
+    <div class="sidebar-section">Gestión</div>
+
+    {% if current_user and current_user.role == 'admin' %}
+    <a class="sidebar-item {% if request.endpoint == 'admin.settings' %}active{% endif %}"
+        href="{{ url_for('admin.settings') }}" title="Configuración">
+        <span class="sidebar-icon">
+            <i class="fa-solid fa-gear"></i>
+        </span>
+        <span class="sidebar-text">Configuración</span>
+    </a>
+    {% endif %}
+
+    <a class="sidebar-item" href="#" title="Reportes">
+        <span class="sidebar-icon">
+            <i class="fa-solid fa-chart-column"></i>
+        </span>
+        <span class="sidebar-text">Reportes</span>
+    </a>
+
+    {% if current_user and current_user.role == 'admin' %}
+    <a class="sidebar-item {% if request.endpoint == 'admin.audit_logs' %}active{% endif %}"
+        href="{{ url_for('admin.audit_logs') if url_for else '#' }}" title="Auditoría">
+        <span class="sidebar-icon">
+            <i class="fa-solid fa-file-lines"></i>
+        </span>
+        <span class="sidebar-text">Auditoría</span>
+    </a>
+    {% endif %}
+
+    <div class="sidebar-section">Soporte</div>
+
+    <a class="sidebar-item" href="#" title="Ayuda">
+        <span class="sidebar-icon">
+            <i class="fa-solid fa-circle-question"></i>
+        </span>
+        <span class="sidebar-text">Ayuda</span>
+    </a>
+</aside>

@@ -37,5 +37,15 @@ class Config:
 
     # Session Configuration
     from datetime import timedelta
-    PERMANENT_SESSION_LIFETIME = timedelta(minutes=5)
+    PERMANENT_SESSION_LIFETIME = timedelta(minutes=30)  # Changed from 5 to 30 minutes
     SESSION_REFRESH_EACH_REQUEST = True
+    
+    # Flask-Security-Too Configuration
+    SECURITY_PASSWORD_SALT = os.environ.get('SECURITY_PASSWORD_SALT') or SECRET_KEY
+    SECURITY_REGISTERABLE = False  # Disable public registration
+    SECURITY_RECOVERABLE = True  # Enable password recovery
+    SECURITY_CHANGEABLE = True  # Enable password change
+    SECURITY_SEND_PASSWORD_CHANGE_EMAIL = True
+    SECURITY_SEND_PASSWORD_RESET_EMAIL = True
+    SECURITY_PASSWORD_HASH = 'bcrypt'
+    SECURITY_TRACKABLE = True  # Track user login info

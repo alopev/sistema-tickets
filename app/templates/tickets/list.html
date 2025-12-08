@@ -1,42 +1,421 @@
-{% extends "base.html" %}
+{% extends "layouts/page_shell.html" %}
+
+{% block title %}Tickets - {{ system_settings.project_name if system_settings else 'Mesa de Servicio' }}{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h2>{{ title }}</h2>
-    <a href="{{ url_for('main.create_ticket') }}" class="btn btn-primary">Nuevo Ticket</a>
+<div class="page-title">Tickets</div>
+
+<!-- Stats Cards -->
+<section class="stats-grid-mini">
+    <div class="stat-mini stat-neutral">
+        <i class="fa-solid fa-ticket"></i>
+        <span>Total: {{ tickets|length }}</span>
+    </div>
+    <div class="stat-mini stat-red">
+        <i class="fa-solid fa-circle-dot"></i>
+        <span>Abiertos: {{ tickets|selectattr('status', 'equalto', 'abierto')|list|length }}</span>
+    </div>
+    <div class="stat-mini stat-amber">
+        <i class="fa-solid fa-clock"></i>
+        <span>En Proceso: {{ tickets|selectattr('status', 'equalto', 'en_proceso')|list|length }}</span>
+    </div>
+    <div class="stat-mini stat-green">
+        <i class="fa-solid fa-check-circle"></i>
+        <span>Cerrados: {{ tickets|selectattr('status', 'equalto', 'cerrado')|list|length }}</span>
+    </div>
+</section>
+
+<!-- Header Actions -->
+<div class="tickets-header">
+    <div class="filters-section">
+        <input type="text" class="search-input-inline" id="searchTickets" placeholder="Buscar tickets...">
+        <select class="filter-select" id="filterStatus">
+            <option value="">Todos los estados</option>
+            <option value="abierto">Abierto</option>
+            <option value="en_proceso">En Proceso</option>
+            <option value="cerrado">Cerrado</option>
+        </select>
+        <select class="filter-select" id="filterPriority">
+            <option value="">Todas las prioridades</option>
+            <option value="alta">Alta</option>
+            <option value="media">Media</option>
+            <option value="baja">Baja</option>
+        </select>
+    </div>
+    <div class="actions-section">
+        <button class="btn-primary" onclick="openCreateTicketModal()">
+            <i class="fa-solid fa-plus"></i>
+            Nuevo Ticket
+        </button>
+    </div>
 </div>
 
-<table class="table table-hover">
-    <thead>
-        <tr>
-            <th>Número</th>
-            <th>Título</th>
-            <th>Estado</th>
-            <th>Prioridad</th>
-            <th>Creado Por</th>
-            <th>Asignado A</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for ticket in tickets %}
-        <tr>
-            <td><strong>{{ ticket.ticket_number }}</strong></td>
-            <td>{{ ticket.title }}</td>
-            <td>
-                <span
-                    class="badge bg-{{ 'danger' if ticket.status == 'abierto' else 'warning' if ticket.status == 'en_proceso' else 'success' }}">
-                    {{ ticket.status }}
-                </span>
-            </td>
-            <td>{{ ticket.priority }}</td>
-            <td>{{ ticket.created_by.username }}</td>
-            <td>{{ ticket.assigned_to.username if ticket.assigned_to else 'Sin asignar' }}</td>
-            <td>
-                <a href="{{ url_for('main.ticket_detail', id=ticket.id) }}" class="btn btn-sm btn-info">Ver</a>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<!-- Tickets Table -->
+<div class="desktop-card">
+    <div class="desktop-card-header">
+        <i class="fa-solid fa-list"></i>
+        Lista de Tickets
+    </div>
+    <div class="desktop-card-body p-0">
+        <table class="tickets-table">
+            <thead>
+                <tr>
+                    <th><i class="fa-solid fa-hashtag"></i> #</th>
+                    <th><i class="fa-solid fa-heading"></i> Título</th>
+                    <th><i class="fa-solid fa-circle-dot"></i> Estado</th>
+                    <th><i class="fa-solid fa-flag"></i> Prioridad</th>
+                    <th><i class="fa-solid fa-user"></i> Creado Por</th>
+                    <th><i class="fa-solid fa-user-check"></i> Asignado A</th>
+                    <th><i class="fa-solid fa-gear"></i> Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="ticketsTableBody">
+                {% for ticket in tickets %}
+                <tr data-status="{{ ticket.status }}" data-priority="{{ ticket.priority }}">
+                    <td><strong class="ticket-number">#{{ ticket.ticket_number }}</strong></td>
+                    <td class="ticket-title">{{ ticket.title }}</td>
+                    <td>
+                        <span class="ticket-badge badge-{{ ticket.status }}">
+                            {% if ticket.status == 'abierto' %}Abierto
+                            {% elif ticket.status == 'en_proceso' %}En Proceso
+                            {% else %}Cerrado{% endif %}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="priority-badge priority-{{ ticket.priority }}">
+                            <i class="fa-solid fa-flag"></i>
+                            {{ ticket.priority|capitalize }}
+                        </span>
+                    </td>
+                    <td>{{ ticket.created_by.username }}</td>
+                    <td>{{ ticket.assigned_to.username if ticket.assigned_to else 'Sin asignar' }}</td>
+                    <td>
+                        <button class="btn-icon btn-view" onclick="viewTicket({{ ticket.id }})" title="Ver detalles">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                        <button class="btn-icon btn-edit" onclick="editTicket({{ ticket.id }})" title="Editar">
+                            <i class="fa-solid fa-pen"></i>
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% if not tickets %}
+        <div class="empty-state">
+            <i class="fa-solid fa-inbox"></i>
+            <p>No hay tickets para mostrar</p>
+            <button class="btn-primary" onclick="openCreateTicketModal()">Crear primer ticket</button>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Modal: Crear Ticket -->
+<div class="modal-overlay" id="createTicketModal">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h3><i class="fa-solid fa-plus-circle"></i> Crear Nuevo Ticket</h3>
+            <button class="modal-close" onclick="closeCreateTicketModal()">
+                <i class="fa-solid fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form id="createTicketForm" method="post" action="{{ url_for('main.create_ticket') }}"
+                enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                <div class="form-group">
+                    <label>Título</label>
+                    <input type="text" name="title" class="form-input" required placeholder="Título del ticket...">
+                </div>
+
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea name="description" class="form-textarea" rows="5" required
+                        placeholder="Describe el problema o solicitud..."></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-flag"></i> Prioridad</label>
+                        <select name="priority" class="form-select">
+                            <option value="baja">Baja</option>
+                            <option value="media" selected>Media</option>
+                            <option value="alta">Alta</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-paperclip"></i> Adjuntar Archivo</label>
+                        <input type="file" name="file" class="form-file">
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="closeCreateTicketModal()">Cancelar</button>
+                    <button type="submit" class="btn-primary">
+                        <i class="fa-solid fa-check"></i>
+                        Crear Ticket
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Ver Ticket -->
+<div class="modal-overlay" id="viewTicketModal">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h3><i class="fa-solid fa-eye"></i> Detalles del Ticket</h3>
+            <button class="modal-close" onclick="closeViewTicketModal()">
+                <i class="fa-solid fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body" id="viewTicketContent">
+            <div class="loading-spinner">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                Cargando...
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Editar Ticket -->
+<div class="modal-overlay" id="editTicketModal">
+    <div class="modal-container modal-container-wide">
+        <div class="modal-header">
+            <h3><i class="fa-solid fa-pen"></i> Editar Ticket</h3>
+            <button class="modal-close" onclick="closeEditTicketModal()">
+                <i class="fa-solid fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body" id="editTicketContent">
+            <div class="loading-spinner">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                Cargando...
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Move modals to body
+    document.addEventListener('DOMContentLoaded', function () {
+        ['createTicketModal', 'viewTicketModal', 'editTicketModal'].forEach(function (id) {
+            const modal = document.getElementById(id);
+            if (modal && modal.parentElement !== document.body) {
+                document.body.appendChild(modal);
+            }
+        });
+    });
+
+    // Create Modal
+    function openCreateTicketModal() {
+        document.getElementById('createTicketModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeCreateTicketModal() {
+        document.getElementById('createTicketModal').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    // View Modal
+    function openViewTicketModal() {
+        document.getElementById('viewTicketModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeViewTicketModal() {
+        document.getElementById('viewTicketModal').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    // Edit Modal
+    function openEditTicketModal() {
+        document.getElementById('editTicketModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeEditTicketModal() {
+        document.getElementById('editTicketModal').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    // View Ticket
+    function viewTicket(ticketId) {
+        openViewTicketModal();
+        const content = document.getElementById('viewTicketContent');
+
+        fetch('/tickets/' + ticketId + '/details')
+            .then(response => response.json())
+            .then(data => {
+                const assignedSection = data.assigned_to ?
+                    '<div class="detail-assigned"><h4>Asignado a</h4><p><i class="fa-solid fa-user-check"></i> ' + data.assigned_to + '</p></div>'
+                    : '';
+
+                content.innerHTML =
+                    '<div class="ticket-detail-view">' +
+                    '<div class="detail-header">' +
+                    '<span class="ticket-number">#' + data.ticket_number + '</span>' +
+                    '<span class="ticket-badge badge-' + data.status + '">' + data.status_label + '</span>' +
+                    '</div>' +
+                    '<h2>' + data.title + '</h2>' +
+                    '<div class="detail-meta">' +
+                    '<span><i class="fa-solid fa-user"></i> ' + data.created_by + '</span>' +
+                    '<span><i class="fa-solid fa-calendar"></i> ' + data.created_at + '</span>' +
+                    '<span><i class="fa-solid fa-flag"></i> ' + data.priority + '</span>' +
+                    '</div>' +
+                    '<div class="detail-description">' +
+                    '<h4>Descripción</h4>' +
+                    '<p>' + data.description + '</p>' +
+                    '</div>' +
+                    assignedSection +
+                    '<div class="detail-actions">' +
+                    '<button class="btn-secondary" onclick="closeViewTicketModal()">Cerrar</button>' +
+                    '<button class="btn-primary" onclick="closeViewTicketModal(); editTicket(' + ticketId + ');"><i class="fa-solid fa-pen"></i> Editar</button>' +
+                    '</div>' +
+                    '</div>';
+            })
+            .catch(error => {
+                content.innerHTML = '<div class="error-state"><i class="fa-solid fa-exclamation-circle"></i><p>Error al cargar el ticket</p></div>';
+            });
+    }
+
+    // Edit Ticket
+    function editTicket(ticketId) {
+        openEditTicketModal();
+        const content = document.getElementById('editTicketContent');
+
+        fetch('/tickets/' + ticketId + '/details')
+            .then(response => response.json())
+            .then(data => {
+                fetch('/api/technicians')
+                    .then(resp => resp.json())
+                    .then(technicians => {
+                        const techOptions = technicians.map(tech =>
+                            '<option value="' + tech.id + '" ' + (data.assigned_to_id == tech.id ? 'selected' : '') + '>' +
+                            tech.username + ' (' + tech.role + ')' +
+                            '</option>'
+                        ).join('');
+
+                        content.innerHTML =
+                            '<form id="editTicketForm">' +
+                            '<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">' +
+                            '<div class="form-row-2col">' +
+                            '<div class="form-col">' +
+                            '<h4 class="form-section-title"><i class="fa-solid fa-info-circle"></i> Información del Ticket</h4>' +
+                            '<div class="form-group"><label>Número</label><input type="text" class="form-input" value="' + data.ticket_number + '" disabled></div>' +
+                            '<div class="form-group"><label>Título</label><input type="text" class="form-input" value="' + data.title + '" disabled></div>' +
+                            '<div class="form-group"><label>Descripción</label><textarea class="form-textarea" rows="4" disabled>' + data.description + '</textarea></div>' +
+                            '<div class="form-row">' +
+                            '<div class="form-group"><label>Prioridad</label><input type="text" class="form-input" value="' + data.priority + '" disabled></div>' +
+                            '<div class="form-group"><label>Creado por</label><input type="text" class="form-input" value="' + data.created_by + '" disabled></div>' +
+                            '</div>' +
+                            '</div>' +
+                            '<div class="form-col">' +
+                            '<h4 class="form-section-title"><i class="fa-solid fa-cogs"></i> Gestión</h4>' +
+                            '<div class="form-group"><label><i class="fa-solid fa-circle-dot"></i> Estado</label>' +
+                            '<select name="status" class="form-select">' +
+                            '<option value="abierto" ' + (data.status == 'abierto' ? 'selected' : '') + '>Abierto</option>' +
+                            '<option value="en_proceso" ' + (data.status == 'en_proceso' ? 'selected' : '') + '>En Proceso</option>' +
+                            '<option value="cerrado" ' + (data.status == 'cerrado' ? 'selected' : '') + '>Cerrado</option>' +
+                            '</select></div>' +
+                            '<div class="form-group"><label><i class="fa-solid fa-user-check"></i> Asignar a</label>' +
+                            '<select name="assigned_to" class="form-select"><option value="">-- Sin asignar --</option>' + techOptions + '</select></div>' +
+                            '</div></div>' +
+                            '<div class="modal-footer">' +
+                            '<button type="button" class="btn-secondary" onclick="closeEditTicketModal()">Cancelar</button>' +
+                            '<button type="submit" class="btn-primary"><i class="fa-solid fa-check"></i> Actualizar Ticket</button>' +
+                            '</div></form>';
+
+                        // Add submit handler - CRITICAL: prevent default!
+                        document.getElementById('editTicketForm').addEventListener('submit', function (e) {
+                            e.preventDefault();
+                            const formData = new FormData();
+                            formData.append('csrf_token', '{{ csrf_token() }}');
+                            formData.append('status', this.querySelector('[name="status"]').value);
+                            formData.append('assigned_to', this.querySelector('[name="assigned_to"]').value);
+
+                            fetch('/ticket/' + ticketId, {
+                                method: 'POST',
+                                body: formData
+                            })
+                                .then(response => {
+                                    if (response.ok) {
+                                        closeEditTicketModal();
+                                        if (typeof Swal !== 'undefined') {
+                                            Swal.fire({ icon: 'success', title: 'Ticket actualizado', showConfirmButton: false, timer: 1500 });
+                                        }
+                                        setTimeout(() => location.reload(), 1500);
+                                    } else {
+                                        throw new Error('Error');
+                                    }
+                                })
+                                .catch(error => {
+                                    if (typeof Swal !== 'undefined') {
+                                        Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo actualizar' });
+                                    }
+                                });
+                        });
+                    })
+                    .catch(() => {
+                        content.innerHTML = '<div class="error-state"><p>Error al cargar técnicos</p></div>';
+                    });
+            })
+            .catch(error => {
+                content.innerHTML = '<div class="error-state"><i class="fa-solid fa-exclamation-circle"></i><p>Error al cargar</p></div>';
+            });
+    }
+
+    // Filters
+    if (document.getElementById('searchTickets')) {
+        document.getElementById('searchTickets').addEventListener('keyup', filterTickets);
+    }
+    if (document.getElementById('filterStatus')) {
+        document.getElementById('filterStatus').addEventListener('change', filterTickets);
+    }
+    if (document.getElementById('filterPriority')) {
+        document.getElementById('filterPriority').addEventListener('change', filterTickets);
+    }
+
+    function filterTickets() {
+        const searchTerm = document.getElementById('searchTickets').value.toLowerCase();
+        const statusFilter = document.getElementById('filterStatus').value;
+        const priorityFilter = document.getElementById('filterPriority').value;
+        const rows = document.querySelectorAll('#ticketsTableBody tr');
+
+        rows.forEach(function (row) {
+            const title = row.querySelector('.ticket-title').textContent.toLowerCase();
+            const status = row.dataset.status;
+            const priority = row.dataset.priority;
+
+            const matchesSearch = title.includes(searchTerm);
+            const matchesStatus = !statusFilter || status === statusFilter;
+            const matchesPriority = !priorityFilter || priority === priorityFilter;
+
+            if (matchesSearch && matchesStatus && matchesPriority) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+
+    // Close on outside click
+    document.querySelectorAll('.modal-overlay').forEach(function (modal) {
+        modal.addEventListener('click', function (e) {
+            if (e.target === modal) {
+                modal.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        });
+    });
+</script>
 {% endblock %}

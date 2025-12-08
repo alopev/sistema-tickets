@@ -1,0 +1,925 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Mesa de Servicio - Dashboard (Híbrido)</title>
+
+    <!-- Framework7 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/framework7@9.0.2/framework7-bundle.min.css" />
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/framework7-icons@5.0.5/css/framework7-icons.css" />
+
+    <style>
+        /* =========================
+       VARIABLES
+    ========================== */
+        :root {
+            --topbar-bg: #1b1f24;
+            --topbar-border: rgba(255, 255, 255, .06);
+            --topbar-text: #edf2f7;
+
+            --card-bg: #ffffff;
+            --card-border: rgba(2, 6, 23, .08);
+            --shadow-sm: 0 1px 1px rgba(2, 6, 23, .04), 0 6px 18px rgba(2, 6, 23, .05);
+
+            --radius-lg: 12px;
+
+            /* Paleta sobria */
+            --c-green: #16a34a;
+            --c-purple: #a855f7;
+            --c-amber: #f59e0b;
+            --c-red: #ef4444;
+            --c-cyan: #06b6d4;
+
+            /* Sidebar */
+            --sidebar-bg: rgba(255, 255, 255, 0.55);
+            --sidebar-border: rgba(2, 6, 23, .06);
+            --sidebar-item: #0f172a;
+            --sidebar-item-muted: #475569;
+            --sidebar-active-bg: rgba(2, 6, 23, .06);
+
+            /* Textos estandarizados */
+            --text-title: #0f172a;
+            --text-soft: #334155;
+            --text-muted: #475569;
+        }
+
+        /* =========================
+       BASE / ESCALA
+    ========================== */
+        html {
+            font-size: 105%;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+            color: var(--text-title);
+
+            /* Fondo más fuerte (nivel 3 ajustado) */
+            background-color: #e9efff;
+            background-image:
+                radial-gradient(1200px 700px at 10% 8%, rgba(99, 102, 241, .32), transparent 60%),
+                radial-gradient(1200px 700px at 90% 25%, rgba(14, 165, 233, .28), transparent 60%),
+                linear-gradient(135deg, #e9efff 0%, #f8fafc 35%, #eaf7ff 100%);
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+
+        .subtle-dots {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            opacity: .10;
+            background-image: radial-gradient(rgba(120, 140, 255, .18) 1px, transparent 1.5px);
+            background-size: 200px 200px;
+            z-index: 0;
+        }
+
+        /* =========================
+       TOPBAR (ESTRUCTURA)
+    ========================== */
+        .mds-topbar {
+            background: var(--topbar-bg);
+            color: var(--topbar-text);
+            height: 60px;
+
+            display: flex;
+            align-items: center;
+            gap: 14px;
+
+            padding: 0 18px;
+            border-bottom: 1px solid var(--topbar-border);
+
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+
+        /* 3 columnas del navbar */
+        .top-left,
+        .top-center,
+        .top-right {
+            display: flex;
+            align-items: center;
+            min-width: 0;
+        }
+
+        .top-left {
+            flex: 1;
+            gap: 14px;
+        }
+
+        .top-center {
+            flex: 1;
+            justify-content: center;
+            /* ✅ centro real sin trucos raros */
+        }
+
+        .top-right {
+            flex: 1;
+            justify-content: flex-end;
+            gap: 12px;
+            white-space: nowrap;
+        }
+
+        /* Marca */
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 210px;
+        }
+
+        .brand-logo {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: #0f172a;
+            display: grid;
+            place-items: center;
+            border: 1px solid rgba(255, 255, 255, .08);
+            font-size: 12px;
+            font-weight: 800;
+            color: #dbeafe;
+        }
+
+        .brand-title {
+            font-weight: 650;
+            font-size: 17px;
+            white-space: nowrap;
+        }
+
+        /* Botón toggle sidebar */
+        .sidebar-toggle {
+            margin-left: 8px;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, .08);
+            background: #0f172a;
+            color: #e5e7eb;
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+        }
+
+        /* Topnav (dejado para futuro) */
+        .topnav {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .topnav a {
+            color: var(--topbar-text);
+            text-decoration: none;
+            font-size: 14px;
+            opacity: .9;
+        }
+
+        .topnav a:hover {
+            opacity: 1;
+        }
+
+        /* Divisor reusable (no anidado) */
+        .divider {
+            width: 1px;
+            height: 18px;
+            background: rgba(255, 255, 255, .12);
+            margin: 0 2px;
+            display: inline-block;
+        }
+
+        .pill-time {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 700;
+            color: #ffd400;
+            font-size: 13.5px;
+            opacity: .9;
+        }
+
+        .moon {
+            font-size: 17px;
+            opacity: .85;
+            margin-left: 2px;
+        }
+
+        /* Usuario */
+        .user-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13.8px;
+        }
+
+        .user-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #0b1220;
+            border: 1px solid rgba(255, 255, 255, .14);
+            display: grid;
+            place-items: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: #c7d2fe;
+        }
+
+        .top-link {
+            color: var(--topbar-text);
+            text-decoration: none;
+            font-size: 13.5px;
+            opacity: .8;
+        }
+
+        .top-link:hover {
+            opacity: 1;
+        }
+
+        /* Buscador */
+        .search-wrap {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* ancho elegante del buscador centrado */
+        .top-center .search-wrap {
+            width: min(360px, 100%);
+        }
+
+        .search-input {
+            height: 32px;
+            width: 100%;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, .08);
+            background: #0f172a;
+            color: #e5e7eb;
+            padding: 0 10px;
+            outline: none;
+            font-size: 13px;
+        }
+
+        .search-input::placeholder {
+            color: #9aa6b2;
+        }
+
+        .search-btn {
+            width: 34px;
+            height: 32px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, .08);
+            background: #0f172a;
+            display: grid;
+            place-items: center;
+            color: #e5e7eb;
+            cursor: pointer;
+            flex: 0 0 auto;
+        }
+
+        /* =========================
+       LAYOUT HÍBRIDO
+    ========================== */
+        .app-layout {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            gap: 18px;
+            align-items: flex-start;
+            padding: 0 18px 60px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* =========================
+       SIDEBAR (BASE)
+    ========================== */
+        .sidebar {
+            width: 240px;
+            margin-top: 18px;
+            background: var(--sidebar-bg);
+            border: 1px solid var(--sidebar-border);
+            border-radius: var(--radius-lg);
+            backdrop-filter: blur(8px);
+            box-shadow: 0 12px 28px rgba(2, 6, 23, .06);
+            padding: 14px 10px 10px;
+
+            position: sticky;
+            top: 78px;
+            height: calc(100vh - 100px);
+            overflow: auto;
+
+            transition: width .18s ease, padding .18s ease;
+            color: var(--sidebar-item);
+        }
+
+        .sidebar-section {
+            margin: 6px 8px 10px;
+            font-size: 11.5px;
+            color: var(--sidebar-item-muted);
+            font-weight: 650;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+        }
+
+        .sidebar-item {
+            position: relative;
+            /* ✅ necesario para el badge en colapsado */
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 10px;
+            margin: 4px 6px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: 13.8px;
+            font-weight: 600;
+            opacity: .92;
+            color: var(--sidebar-item);
+        }
+
+        .sidebar-item:hover {
+            background: rgba(2, 6, 23, .04);
+            opacity: 1;
+        }
+
+        .sidebar-item.active {
+            background: var(--sidebar-active-bg);
+            border: 1px solid rgba(2, 6, 23, .06);
+        }
+
+        .sidebar-icon {
+            width: 22px;
+            display: grid;
+            place-items: center;
+            opacity: .9;
+        }
+
+        .sidebar-text {
+            color: var(--sidebar-item) !important;
+        }
+
+        .sidebar-badge {
+            margin-left: auto;
+            background: rgba(2, 6, 23, .08);
+            color: #0f172a;
+            font-size: 10.5px;
+            padding: 2px 6px;
+            border-radius: 999px;
+            font-weight: 700;
+        }
+
+        /* =========================
+       SIDEBAR (COLAPSADO)
+    ========================== */
+        body.sidebar-collapsed .sidebar {
+            width: 74px;
+            padding: 12px 6px 10px;
+        }
+
+        body.sidebar-collapsed .sidebar-section {
+            display: none;
+        }
+
+        body.sidebar-collapsed .sidebar-item {
+            justify-content: center;
+            gap: 0;
+            padding: 10px 6px;
+        }
+
+        body.sidebar-collapsed .sidebar-text {
+            display: none;
+        }
+
+        body.sidebar-collapsed .sidebar-badge {
+            position: absolute;
+            right: 8px;
+            top: 8px;
+            font-size: 9px;
+        }
+
+        /* =========================
+       ÁREA PRINCIPAL
+    ========================== */
+        .page-shell {
+            flex: 1;
+            margin: 0;
+            padding: 0;
+            min-width: 0;
+        }
+
+        .page-surface {
+            margin-top: 18px;
+            padding: 22px 16px 40px;
+            background: rgba(255, 255, 255, 0.45);
+            border-radius: var(--radius-lg);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(2, 6, 23, .05);
+            box-shadow:
+                0 8px 20px rgba(2, 6, 23, .06),
+                0 24px 60px rgba(2, 6, 23, .08);
+        }
+
+        .page-title {
+            font-size: 26px;
+            font-weight: 800;
+            margin: 6px 0 18px;
+            color: var(--text-title);
+        }
+
+        /* =========================
+       STATS
+    ========================== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 18px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            padding: 12px 14px 14px;
+            box-shadow: var(--shadow-sm);
+            min-height: 82px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 6px;
+            background: #cbd5e1;
+            opacity: .95;
+        }
+
+        .stat-title {
+            font-size: 12.8px;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-left: 6px;
+        }
+
+        .stat-value {
+            font-size: 22px;
+            font-weight: 800;
+            margin-top: 8px;
+            margin-left: 6px;
+            color: var(--text-title);
+        }
+
+        .stat-green::before {
+            background: var(--c-green);
+        }
+
+        .stat-purple::before {
+            background: var(--c-purple);
+        }
+
+        .stat-amber::before {
+            background: var(--c-amber);
+        }
+
+        .stat-red::before {
+            background: var(--c-red);
+        }
+
+        /* =========================
+       CARDS / CHARTS
+    ========================== */
+        .desktop-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            border: 1px solid var(--card-border);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+        }
+
+        .desktop-card-header {
+            padding: 9px 12px;
+            font-size: 13.8px;
+            font-weight: 700;
+            color: var(--text-soft);
+            border-bottom: 1px solid var(--card-border);
+            background: #fbfcff;
+        }
+
+        .desktop-card-body {
+            padding: 14px;
+            min-height: 270px;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1.15fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .chart-placeholder {
+            height: 230px;
+            border: 1px solid rgba(2, 6, 23, .06);
+            border-radius: 8px;
+            background:
+                linear-gradient(transparent 0 24px, rgba(2, 6, 23, .02) 25px) 0 0/100% 25px,
+                linear-gradient(90deg, transparent 0 60px, rgba(2, 6, 23, .02) 61px) 0 0/61px 100%;
+        }
+
+        .legend-row {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+            margin-top: 12px;
+            font-size: 11.8px;
+            color: var(--text-muted);
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 6px;
+            border-radius: 2px;
+            display: inline-block;
+            margin-right: 6px;
+            transform: translateY(-1px);
+        }
+
+        .ld-open {
+            background: var(--c-red);
+        }
+
+        .ld-progress {
+            background: var(--c-amber);
+        }
+
+        .ld-closed {
+            background: var(--c-green);
+        }
+
+        /* =========================
+       ACCIONES
+    ========================== */
+        .actions-card-body {
+            padding: 12px;
+        }
+
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .action-btn {
+            height: 38px;
+            border-radius: 8px;
+            font-weight: 700;
+            display: grid;
+            place-items: center;
+            text-decoration: none;
+            border: 1px solid rgba(2, 6, 23, .08);
+            background: #ffffff;
+            color: var(--text-title);
+            transition: .12s ease;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 14px rgba(2, 6, 23, .06);
+        }
+
+        .btn-excel {
+            border-color: rgba(22, 163, 74, .25);
+            color: #0f6b33;
+        }
+
+        .btn-pdf {
+            border-color: rgba(239, 68, 68, .25);
+            color: #9f1d1d;
+        }
+
+        .btn-csv {
+            border-color: rgba(6, 182, 212, .25);
+            color: #0b7285;
+        }
+
+        /* =========================
+       FLOATING CHAT
+    ========================== */
+        .floating-chat {
+            position: fixed;
+            right: 22px;
+            bottom: 20px;
+            background: #1b66f9;
+            color: #fff;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 13px;
+            font-weight: 700;
+            box-shadow: 0 10px 26px rgba(2, 6, 23, .18);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 5;
+        }
+
+        .floating-chat .plus {
+            margin-left: 6px;
+            font-weight: 900;
+            opacity: .9;
+        }
+
+        /* =========================
+       RESPONSIVE (AMPLIADO)
+    ========================== */
+        @media (max-width: 1400px) {
+            .app-layout {
+                max-width: 1280px;
+            }
+        }
+
+        @media (max-width: 1300px) {
+            .app-layout {
+                max-width: 1200px;
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .actions-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .top-center .search-wrap {
+                width: min(300px, 100%);
+            }
+        }
+
+        @media (max-width: 1020px) {
+            .sidebar {
+                width: 210px;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .app-layout {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: auto;
+                height: auto;
+                position: static;
+            }
+        }
+
+        /* Unificado para topbar móvil */
+        @media (max-width: 860px) {
+            .mds-topbar {
+                flex-wrap: wrap;
+                height: auto;
+                padding: 10px 14px;
+                gap: 10px;
+            }
+
+            .top-left,
+            .top-center,
+            .top-right {
+                flex: 1 1 100%;
+                justify-content: flex-start;
+            }
+        }
+
+        @media (max-width: 560px) {
+            .top-center .search-wrap {
+                width: 100%;
+            }
+
+            .brand {
+                min-width: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="subtle-dots"></div>
+
+    <!-- Topbar -->
+    <header class="mds-topbar" role="banner">
+        <div class="top-left">
+            <div class="brand">
+                <div class="brand-logo">MS</div>
+                <div class="brand-title">Mesa de Servicio</div>
+                <button class="sidebar-toggle" type="button" aria-label="Alternar menú">
+                    <i class="icon f7-icons" style="font-size:16px;">line_horizontal_3</i>
+                </button>
+            </div>
+
+            <nav class="topnav" role="navigation" aria-label="Navegación principal">
+                <!-- Dejamos esto listo para futuro -->
+                <!-- <a href="#">Dashboard</a> -->
+                <!-- <a href="#">Usuarios</a> -->
+                <!-- <a href="#">Configuración</a> -->
+                <!-- <a href="#">Tickets</a> -->
+                <span class="divider"></span>
+                <span class="pill-time">
+                    <i class="icon f7-icons" style="font-size:14px;">clock</i>
+                    04:55
+                </span>
+                <span class="moon">🌙</span>
+            </nav>
+        </div>
+
+        <div class="top-center">
+            <div class="search-wrap">
+                <input class="search-input" type="search" placeholder="Buscar..." />
+                <button class="search-btn" aria-label="Buscar">
+                    <i class="icon f7-icons" style="font-size:16px;">search</i>
+                </button>
+            </div>
+        </div>
+
+        <div class="top-right">
+            <span class="user-chip">
+                <span class="user-avatar">A</span>
+                <strong>Hola, admin</strong>
+            </span>
+            <span class="divider"></span>
+            <a class="top-link" href="#">Mi Perfil</a>
+            <a class="top-link" href="#">Salir</a>
+        </div>
+    </header>
+
+    <!-- Layout híbrido -->
+    <div class="app-layout">
+
+        <!-- Sidebar -->
+        <aside class="sidebar" aria-label="Navegación lateral">
+            <div class="sidebar-section">Principal</div>
+
+            <!-- ✅ Solo el activo con aria-current -->
+            <a class="sidebar-item active" href="#" aria-current="page" title="Dashboard">
+                <span class="sidebar-icon"><i class="icon f7-icons">rectangle_grid_2x2_fill</i></span>
+                <span class="sidebar-text">Dashboard</span>
+            </a>
+
+            <a class="sidebar-item" href="#" title="Tickets">
+                <span class="sidebar-icon"><i class="icon f7-icons">ticket_fill</i></span>
+                <span class="sidebar-text">Tickets</span>
+                <span class="sidebar-badge">0</span>
+            </a>
+
+            <a class="sidebar-item" href="#" title="Usuarios">
+                <span class="sidebar-icon"><i class="icon f7-icons">person_2_fill</i></span>
+                <span class="sidebar-text">Usuarios</span>
+            </a>
+
+            <div class="sidebar-section">Gestión</div>
+
+            <a class="sidebar-item" href="#" title="Configuración">
+                <span class="sidebar-icon"><i class="icon f7-icons">gear_alt_fill</i></span>
+                <span class="sidebar-text">Configuración</span>
+            </a>
+
+            <a class="sidebar-item" href="#" title="Reportes">
+                <span class="sidebar-icon"><i class="icon f7-icons">chart_bar_fill</i></span>
+                <span class="sidebar-text">Reportes</span>
+            </a>
+
+            <a class="sidebar-item" href="#" title="Auditoría">
+                <span class="sidebar-icon"><i class="icon f7-icons">doc_text_fill</i></span>
+                <span class="sidebar-text">Auditoría</span>
+            </a>
+
+            <div class="sidebar-section">Soporte</div>
+
+            <a class="sidebar-item" href="#" title="Ayuda">
+                <span class="sidebar-icon"><i class="icon f7-icons">question_circle_fill</i></span>
+                <span class="sidebar-text">Ayuda</span>
+            </a>
+        </aside>
+
+        <!-- Contenido -->
+        <main class="page-shell">
+            <div class="page-surface">
+                <div class="page-title">Dashboard</div>
+
+                <!-- Stats -->
+                <section class="stats-grid">
+                    <div class="stat-card stat-green">
+                        <div class="stat-title">Total Tickets</div>
+                        <div class="stat-value">0</div>
+                    </div>
+                    <div class="stat-card stat-purple">
+                        <div class="stat-title">Abiertos</div>
+                        <div class="stat-value">0</div>
+                    </div>
+                    <div class="stat-card stat-amber">
+                        <div class="stat-title">En Proceso</div>
+                        <div class="stat-value">0</div>
+                    </div>
+                    <div class="stat-card stat-red">
+                        <div class="stat-title">Cerrados</div>
+                        <div class="stat-value">0</div>
+                    </div>
+                </section>
+
+                <!-- Charts -->
+                <section class="charts-grid">
+                    <div class="desktop-card">
+                        <div class="desktop-card-header">Estado de Tickets</div>
+                        <div class="desktop-card-body">
+                            <div class="chart-placeholder"></div>
+                            <div class="legend-row">
+                                <span><i class="legend-dot ld-open"></i> Abiertos</span>
+                                <span><i class="legend-dot ld-progress"></i> En Proceso</span>
+                                <span><i class="legend-dot ld-closed"></i> Cerrados</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="desktop-card">
+                        <div class="desktop-card-header">Prioridad de Tickets</div>
+                        <div class="desktop-card-body">
+                            <div class="chart-placeholder"></div>
+                            <div class="legend-row" style="gap:26px;">
+                                <span>Alta</span>
+                                <span>Media</span>
+                                <span>Baja</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Quick actions -->
+                <section class="desktop-card">
+                    <div class="desktop-card-header">Acciones Rápidas</div>
+                    <div class="actions-card-body">
+                        <div class="actions-grid">
+                            <a class="action-btn btn-excel" href="#">Exportar Excel</a>
+                            <a class="action-btn btn-pdf" href="#">Exportar PDF</a>
+                            <a class="action-btn btn-csv" href="#">Exportar CSV</a>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Floating chat -->
+    <div class="floating-chat">
+        <i class="icon f7-icons" style="font-size:14px;">chat_bubble_2_fill</i>
+        Chat Privado
+        <span class="plus">+</span>
+    </div>
+
+    <!-- Framework7 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/framework7@9.0.2/framework7-bundle.min.js"></script>
+
+    <!-- JS (JavaScript) para colapsar sidebar -->
+    <script>
+        (function () {
+            const body = document.body;
+            const btn = document.querySelector('.sidebar-toggle');
+
+            const saved = localStorage.getItem('mds_sidebar');
+            if (saved === 'collapsed') {
+                body.classList.add('sidebar-collapsed');
+            }
+
+            if (btn) {
+                btn.addEventListener('click', () => {
+                    body.classList.toggle('sidebar-collapsed');
+                    localStorage.setItem(
+                        'mds_sidebar',
+                        body.classList.contains('sidebar-collapsed') ? 'collapsed' : 'expanded'
+                    );
+                });
+            }
+        })();
+    </script>
+</body>
+
+</html>

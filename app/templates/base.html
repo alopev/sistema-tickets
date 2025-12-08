@@ -20,14 +20,24 @@
       background: #000;
     }
 
-    /* No Man's Sky Style Preloader */
+    /* 3D Boxes Loader Preloader */
+    :root {
+      --box-size: 32px;
+      --gutter: 4px;
+      --duration: 1600ms;
+      --primary: #275EFE;
+      --primary-light: #2f71ff;
+    }
+
     #preloader {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: radial-gradient(circle at center, #0a0a0a 0%, #000000 100%);
+      /* Theme-aware background matching navbar */
+      background: var(--bs-dark, #212529);
+      /* Default dark */
       z-index: 9999;
       display: flex;
       justify-content: center;
@@ -37,205 +47,184 @@
       overflow: hidden;
     }
 
-    /* Animated background particles */
-    #preloader::before {
-      content: '';
-      position: absolute;
-      width: 200%;
-      height: 200%;
-      background-image: 
-        radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
-        radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
-      background-size: 50px 50px, 80px 80px;
-      background-position: 0 0, 25px 25px;
-      animation: particleFloat 60s linear infinite;
+    /* Light theme background */
+    html[data-bs-theme="light"] #preloader {
+      background: #f8f9fa;
+      /* Bootstrap bg-light */
     }
 
-    @keyframes particleFloat {
-      0% { transform: translate(0, 0); }
-      100% { transform: translate(-50px, -50px); }
+    /* Dark theme background (explicit) */
+    html[data-bs-theme="dark"] #preloader {
+      background: #212529;
+      /* Bootstrap bg-dark */
     }
 
-    /* Main loader container */
-    .nms-loader {
+    /* 3D Boxes Container */
+    .loader-3d {
       position: relative;
-      width: 200px;
-      height: 200px;
+      width: calc(var(--box-size) * 4 + var(--gutter) * 6);
+      height: calc(var(--box-size) * 2 + var(--gutter) * 4);
+      transform-style: preserve-3d;
+      transform: rotateX(-20deg) rotateY(-45deg);
       z-index: 1;
     }
 
-    /* Outer rotating circle with segments */
-    .nms-outer-ring {
+    /* Individual Box */
+    .box {
       position: absolute;
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      animation: rotateOuter 3s linear infinite;
+      width: var(--box-size);
+      height: var(--box-size);
+      border-radius: 4px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      transform-style: preserve-3d;
+      animation: flip var(--duration) cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+      box-shadow: 0 0 20px rgba(39, 94, 254, 0.4);
     }
 
-    /* Circle segments */
-    .nms-segment {
+    /* Box Positioning in Grid */
+    .box0 {
+      left: calc(var(--box-size) * 0 + var(--gutter) * 0);
+      top: calc(var(--box-size) * 0 + var(--gutter) * 0);
+      animation-delay: calc(var(--duration) * -0.875);
+    }
+
+    .box1 {
+      left: calc(var(--box-size) * 1 + var(--gutter) * 2);
+      top: calc(var(--box-size) * 0 + var(--gutter) * 0);
+      animation-delay: calc(var(--duration) * -0.75);
+    }
+
+    .box2 {
+      left: calc(var(--box-size) * 2 + var(--gutter) * 4);
+      top: calc(var(--box-size) * 0 + var(--gutter) * 0);
+      animation-delay: calc(var(--duration) * -0.625);
+    }
+
+    .box3 {
+      left: calc(var(--box-size) * 3 + var(--gutter) * 6);
+      top: calc(var(--box-size) * 0 + var(--gutter) * 0);
+      animation-delay: calc(var(--duration) * -0.5);
+    }
+
+    .box4 {
+      left: calc(var(--box-size) * 0 + var(--gutter) * 0);
+      top: calc(var(--box-size) * 1 + var(--gutter) * 2);
+      animation-delay: calc(var(--duration) * -0.375);
+    }
+
+    .box5 {
+      left: calc(var(--box-size) * 1 + var(--gutter) * 2);
+      top: calc(var(--box-size) * 1 + var(--gutter) * 2);
+      animation-delay: calc(var(--duration) * -0.25);
+    }
+
+    .box6 {
+      left: calc(var(--box-size) * 2 + var(--gutter) * 4);
+      top: calc(var(--box-size) * 1 + var(--gutter) * 2);
+      animation-delay: calc(var(--duration) * -0.125);
+    }
+
+    .box7 {
+      left: calc(var(--box-size) * 3 + var(--gutter) * 6);
+      top: calc(var(--box-size) * 1 + var(--gutter) * 2);
+      animation-delay: calc(var(--duration) * 0);
+    }
+
+    /* Ground Shadow */
+    .ground {
       position: absolute;
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      border: 3px solid transparent;
-      border-top-color: #ff6b35;
-      border-right-color: #f7931e;
-      animation: colorShift 4s ease-in-out infinite;
+      left: -10%;
+      top: 100%;
+      width: 120%;
+      height: 120%;
+      transform: rotateX(90deg);
+      background: radial-gradient(ellipse at center,
+          rgba(0, 0, 0, 0.6) 0%,
+          transparent 60%);
+      filter: blur(20px);
     }
 
-    .nms-segment:nth-child(2) {
-      transform: rotate(120deg);
-      animation-delay: -1.33s;
-    }
-
-    .nms-segment:nth-child(3) {
-      transform: rotate(240deg);
-      animation-delay: -2.66s;
-    }
-
-    /* Inner ring */
-    .nms-inner-ring {
-      position: absolute;
-      top: 15%;
-      left: 15%;
-      width: 70%;
-      height: 70%;
-      border-radius: 50%;
-      border: 3px solid transparent;
-      border-left-color: #00d4ff;
-      border-bottom-color: #00a8e8;
-      animation: rotateInner 2s linear infinite reverse, colorShiftInner 4s ease-in-out infinite;
-    }
-
-    /* Center core */
-    .nms-core {
-      position: absolute;
-      top: 30%;
-      left: 30%;
-      width: 40%;
-      height: 40%;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(255, 107, 53, 0.4), transparent);
-      border: 2px solid #ff6b35;
-      animation: pulse 2s ease-in-out infinite, coreGlow 3s ease-in-out infinite;
-    }
-
-    /* Pulsing center dot */
-    .nms-core::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 12px;
-      height: 12px;
-      background: #fff;
-      border-radius: 50%;
-      transform: translate(-50%, -50%);
-      box-shadow: 0 0 20px #ff6b35, 0 0 40px #ff6b35;
-      animation: centerPulse 1.5s ease-in-out infinite;
-    }
-
-    /* Loading text */
+    /* Loading text with breathing effect */
     .nms-loading-text {
-      margin-top: 40px;
-      font-family: 'Courier New', monospace;
-      font-size: 18px;
-      color: #00d4ff;
-      letter-spacing: 4px;
+      margin-top: 80px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-size: 20px;
+      font-weight: 600;
+      color: white;
+      letter-spacing: 3px;
       text-transform: uppercase;
-      text-shadow: 0 0 10px rgba(0, 212, 255, 0.8);
-      animation: textFlicker 3s ease-in-out infinite;
+      /* Black stroke effect using multiple text-shadows */
+      text-shadow:
+        -1px -1px 0 #000,
+        1px -1px 0 #000,
+        -1px 1px 0 #000,
+        1px 1px 0 #000,
+        0 0 15px rgba(255, 255, 255, 0.6);
+      animation: textBreathing 3s ease-in-out infinite;
     }
 
     /* Progress percentage */
     .nms-progress-text {
       margin-top: 15px;
-      font-family: 'Courier New', monospace;
-      font-size: 14px;
-      color: #ff6b35;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      color: white;
       letter-spacing: 2px;
+      /* Black stroke effect */
+      text-shadow:
+        -1px -1px 0 #000,
+        1px -1px 0 #000,
+        -1px 1px 0 #000,
+        1px 1px 0 #000;
     }
 
-    /* Animations */
-    @keyframes rotateOuter {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
+    /* 3D Flip Animation */
+    @keyframes flip {
+      0% {
+        transform: rotateY(0deg) rotateX(0deg) translateZ(0);
+      }
 
-    @keyframes rotateInner {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
+      25% {
+        transform: rotateY(90deg) rotateX(0deg) translateZ(0);
+      }
 
-    @keyframes colorShift {
-      0%, 100% {
-        border-top-color: #ff6b35;
-        border-right-color: #f7931e;
-      }
-      33% {
-        border-top-color: #00d4ff;
-        border-right-color: #00a8e8;
-      }
-      66% {
-        border-top-color: #9d4edd;
-        border-right-color: #7209b7;
-      }
-    }
-
-    @keyframes colorShiftInner {
-      0%, 100% {
-        border-left-color: #00d4ff;
-        border-bottom-color: #00a8e8;
-      }
       50% {
-        border-left-color: #ff6b35;
-        border-bottom-color: #f7931e;
+        transform: rotateY(180deg) rotateX(0deg) translateZ(0);
+      }
+
+      75% {
+        transform: rotateY(270deg) rotateX(0deg) translateZ(0);
+      }
+
+      100% {
+        transform: rotateY(360deg) rotateX(0deg) translateZ(0);
       }
     }
 
-    @keyframes pulse {
-      0%, 100% {
+    @keyframes textBreathing {
+
+      0%,
+      100% {
+        opacity: 1;
         transform: scale(1);
-        opacity: 1;
+        text-shadow:
+          -1px -1px 0 #000,
+          1px -1px 0 #000,
+          -1px 1px 0 #000,
+          1px 1px 0 #000,
+          0 0 15px rgba(255, 255, 255, 0.6);
       }
-      50% {
-        transform: scale(1.05);
-        opacity: 0.8;
-      }
-    }
 
-    @keyframes coreGlow {
-      0%, 100% {
-        box-shadow: 0 0 20px rgba(255, 107, 53, 0.5),
-                    inset 0 0 20px rgba(255, 107, 53, 0.3);
-      }
       50% {
-        box-shadow: 0 0 40px rgba(0, 212, 255, 0.8),
-                    inset 0 0 30px rgba(0, 212, 255, 0.5);
-      }
-    }
-
-    @keyframes centerPulse {
-      0%, 100% {
-        transform: translate(-50%, -50%) scale(1);
-        opacity: 1;
-      }
-      50% {
-        transform: translate(-50%, -50%) scale(1.3);
-        opacity: 0.7;
-      }
-    }
-
-    @keyframes textFlicker {
-      0%, 100% {
-        opacity: 1;
-        text-shadow: 0 0 10px rgba(0, 212, 255, 0.8);
-      }
-      50% {
-        opacity: 0.8;
-        text-shadow: 0 0 20px rgba(0, 212, 255, 1), 0 0 30px rgba(0, 212, 255, 0.6);
+        opacity: 0.6;
+        transform: scale(0.95);
+        text-shadow:
+          -1px -1px 0 #000,
+          1px -1px 0 #000,
+          -1px 1px 0 #000,
+          1px 1px 0 #000,
+          0 0 25px rgba(255, 255, 255, 0.9);
       }
     }
 
@@ -265,21 +254,24 @@
     .text-info {
       color: var(--bs-info) !important;
     }
-
   </style>
 </head>
 
 <body>
-  <!-- No Man's Sky Style Preloader -->
+  <!-- 3D Boxes Loader Preloader -->
   <div id="preloader">
-    <div class="nms-loader">
-      <div class="nms-outer-ring">
-        <div class="nms-segment"></div>
-        <div class="nms-segment"></div>
-        <div class="nms-segment"></div>
+    <div class="loader-3d">
+      <div class="box box0"></div>
+      <div class="box box1"></div>
+      <div class="box box2"></div>
+      <div class="box box3"></div>
+      <div class="box box4"></div>
+      <div class="box box5"></div>
+      <div class="box box6"></div>
+      <div class="box box7"></div>
+      <div class="ground">
+        <div></div>
       </div>
-      <div class="nms-inner-ring"></div>
-      <div class="nms-core"></div>
     </div>
     <div class="nms-loading-text">Cargando</div>
     <div class="nms-progress-text"><span id="progressText">0</span>%</div>
@@ -384,16 +376,42 @@
       }
     });
 
-    // No Man's Sky Preloader Logic with Minimum Display Time
+    // 3D Boxes Preloader Logic with Conditional Display
     (function () {
       const preloader = document.getElementById('preloader');
       const progressText = document.getElementById('progressText');
-      
-      // Always show preloader (for demo/testing purposes)
+      const currentPath = window.location.pathname;
+
+      // Define pages where preloader should be shown
+      const showPreloaderPaths = [
+        '/',           // Dashboard home
+        '/login',      // Login page
+        '/dashboard'   // Dashboard explicit route
+      ];
+
+      // Check if current path matches any allowed paths
+      const shouldShowPreloader = showPreloaderPaths.some(path =>
+        currentPath === path || (path === '/' && currentPath === '/')
+      );
+
+      // Also check sessionStorage flag from login submission
+      const fromLogin = sessionStorage.getItem('showPreloader') === 'true';
+
+      // Hide preloader immediately if not on allowed pages and not from login
+      if (!shouldShowPreloader && !fromLogin) {
+        preloader.style.display = 'none';
+        return; // Exit function early
+      }
+
+      // Clear the login flag
+      if (fromLogin) {
+        sessionStorage.removeItem('showPreloader');
+      }
+
       // Set to minimum 2.5 seconds to appreciate the animation
       const minimumDisplayTime = 2500; // 2.5 seconds
       const startTime = Date.now();
-      
+
       // Run the progress animation (slower for better visual effect)
       let progress = 0;
       const interval = setInterval(() => {
@@ -401,11 +419,11 @@
         if (progress >= 100) {
           progress = 100;
           clearInterval(interval);
-          
+
           // Calculate remaining time to meet minimum display
           const elapsedTime = Date.now() - startTime;
           const remainingTime = Math.max(0, minimumDisplayTime - elapsedTime);
-          
+
           // Wait for remaining time before hiding
           setTimeout(() => {
             preloader.style.opacity = '0';
@@ -414,7 +432,7 @@
             }, 500);
           }, remainingTime);
         }
-        
+
         progressText.innerText = Math.floor(progress);
       }, 150); // Update every 150ms for smoother animation
     })();

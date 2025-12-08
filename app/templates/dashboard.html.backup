@@ -1,0 +1,263 @@
+{% extends "layouts/page_shell.html" %}
+
+{% block title %}Dashboard - {{ system_settings.project_name if system_settings else 'Mesa de Servicio' }}{% endblock %}
+
+{% block content %}
+<!-- Page Title -->
+<div class="page-title">Dashboard</div>
+
+<!-- Stats Grid with Skeleton Loading -->
+<div id="stats-container">
+    {% set skeleton_type = 'stats' %}
+    {% include "components/skeleton_loader.html" %}
+</div>
+
+<!-- Charts Grid -->
+<section class="charts-grid">
+    <div class="desktop-card">
+        <div class="desktop-card-header">Estado de Tickets</div>
+        <div class="desktop-card-body">
+            <canvas id="statusChart"></canvas>
+        </div>
+    </div>
+
+    <div class="desktop-card">
+        <div class="desktop-card-header">Prioridad de Tickets</div>
+        <div class="desktop-card-body">
+            <canvas id="priorityChart"></canvas>
+        </div>
+    </div>
+</section>
+
+<!-- Quick Actions -->
+<section class="desktop-card">
+    <div class="desktop-card-header">Acciones Rápidas</div>
+    <div class="desktop-card-body">
+        <div class="actions-grid">
+            <a class="action-btn btn-excel" href="{{ url_for('main.export_excel') }}">
+                <i class="icon f7-icons" style="font-size:18px; margin-right: 6px;">doc_text_fill</i>
+                Exportar Excel
+            </a>
+            <a class="action-btn btn-pdf" href="{{ url_for('main.export_pdf') }}">
+                <i class="icon f7-icons" style="font-size:18px; margin-right: 6px;">doc_fill</i>
+                Exportar PDF
+            </a>
+            <a class="action-btn btn-csv" href="{{ url_for('main.export_csv') }}">
+                <i class="icon f7-icons" style="font-size:18px; margin-right: 6px;">rectangle_stack_fill</i>
+                Exportar CSV
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block chart_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    (function () {
+        'use strict';
+
+        // Load real stats data and replace skeleton
+        function loadDashboardData() {
+            // Stats data from Flask
+            const statsData = {
+                total: {{ total }
+        },
+        open: { { open } },
+        process: { { process } },
+        closed: { { closed } }
+    };
+
+    const statusData = {{ status_data | tojson }};
+    const priorityData = {{ priority_data | tojson }};
+
+    // Replace skeleton with real stats after short delay
+    setTimeout(() => {
+        const statsContainer = document.getElementById('stats-container');
+        statsContainer.innerHTML = `
+                    <section class="stats-grid">
+                        <div class="stat-card stat-green">
+                            <div class="stat-title">Total Tickets</div>
+                            <div class="stat-value">${statsData.total}</div>
+                        </div>
+                        <div class="stat-card stat-red">
+                            <div class="stat-title">Abiertos</div>
+                            <div class="stat-value">${statsData.open}</div>
+                        </div>
+                        <div class="stat-card stat-amber">
+                            <div class="stat-title">En Proceso</div>
+                            <div class="stat-value">${statsData.process}</div>
+                        </div>
+                        <div class="stat-card stat-purple">
+                            <div class="stat-title">Cerrados</div>
+                            <div class="stat-value">${statsData.closed}</div>
+                        </div>
+                    </section>
+                `;
+
+        // Initialize charts after stats are loaded
+        initializeCharts(statusData, priorityData);
+    }, 800);
+        }
+
+    function initializeCharts(statusData, priorityData) {
+        // Wait for Chart.js to be ready
+        if (typeof Chart === 'undefined') {
+            console.error('Chart.js is not loaded!');
+            return;
+        }
+
+        // Chart.js Color Config
+        const textColor = '#212529';
+        const gridColor = '#dee2e6';
+
+        Chart.defaults.color = textColor;
+        Chart.defaults.borderColor = gridColor;
+
+        // Status Chart (Doughnut)
+        const statusCanvas = document.getElementById('statusChart');
+        if (statusCanvas) {
+            const ctx = statusCanvas.getContext('2d');
+            window.statusChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Abiertos', 'En Proceso', 'Cerrados'],
+                    datasets: [{
+                        data: statusData,
+                        backgroundColor: [
+                            '#ef4444',  // red
+                            '#f59e0b',  // amber
+                            '#16a34a'   // green
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 15,
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Priority Chart (Bar)
+        const priorityCanvas = document.getElementById('priorityChart');
+        if (priorityCanvas) {
+            const ctx = priorityCanvas.getContext('2d');
+            window.priorityChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Alta', 'Media', 'Baja'],
+                    datasets: [{
+                        label: 'Cantidad de Tickets',
+                        data: priorityData,
+                        backgroundColor: [
+                            '#ef4444',  // red
+                            '#f59e0b',  // amber
+                            '#06b6d4'   // cyan
+                        ],
+                        borderRadius: 8,
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1,
+                                color: textColor
+                            },
+                            grid: {
+                                color: gridColor
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: textColor
+                            },
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    // Real-time Updates via Socket.IO
+    if (typeof socket !== 'undefined') {
+        socket.on('dashboard_update', function () {
+            console.log('Dashboard update event received');
+
+            // Show toast notification
+            if (typeof Swal !== 'undefined') {
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+                Toast.fire({
+                    icon: 'info',
+                    title: 'Actualizando datos...'
+                });
+            }
+
+            // Fetch new data
+            fetch('/api/dashboard-stats')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('New data received:', data);
+
+                    // Update stat cards
+                    const statValues = document.querySelectorAll('.stat-value');
+                    if (statValues.length >= 4) {
+                        statValues[0].innerText = data.total;
+                        statValues[1].innerText = data.open;
+                        statValues[2].innerText = data.process;
+                        statValues[3].innerText = data.closed;
+                    }
+
+                    // Update Charts
+                    if (window.statusChart) {
+                        window.statusChart.data.datasets[0].data = data.status_data;
+                        window.statusChart.update();
+                    }
+                    if (window.priorityChart) {
+                        window.priorityChart.data.datasets[0].data = data.priority_data;
+                        window.priorityChart.update();
+                    }
+                })
+                .catch(err => console.error('Error fetching stats:', err));
+        });
+    }
+
+    // Load dashboard data on page load
+    loadDashboardData();
+    }) ();
+</script>
+{% endblock %}

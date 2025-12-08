@@ -1,13 +1,17 @@
 # Core Flask Dependencies
 flask
 flask-sqlalchemy
-flask-login
-flask-mail
+flask-security-too
+flask-mailman
 flask-wtf
 flask-limiter
 flask-talisman
 flask-socketio
 eventlet
+
+# Security & Authentication
+bcrypt
+pyjwt
 
 # Database
 mysql-connector-python

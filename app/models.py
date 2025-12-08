@@ -2,6 +2,7 @@ from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from app import db, login
+import secrets
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -10,6 +11,19 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(256))
     role = db.Column(db.String(20)) # 'admin', 'tecnico', 'usuario'
     profile_picture = db.Column(db.String(255), nullable=True)
+    
+    # Flask-Security-Too required fields (with defaults for backward compatibility)
+    active = db.Column(db.Boolean, default=True, nullable=False)
+    fs_uniquifier = db.Column(db.String(64), unique=True, nullable=True)  # Nullable for existing users
+    confirmed_at = db.Column(db.DateTime, nullable=True)
+    
+    # User status tracking (Online/Ausente/Offline)
+    last_seen = db.Column(db.DateTime, default=datetime.utcnow)
+    login_count = db.Column(db.Integer, default=0)
+    current_login_at = db.Column(db.DateTime, nullable=True)
+    current_login_ip = db.Column(db.String(45), nullable=True)
+    last_login_at = db.Column(db.DateTime, nullable=True)
+    last_login_ip = db.Column(db.String(45), nullable=True)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -33,6 +47,18 @@ class User(UserMixin, db.Model):
             current_app.config['SECRET_KEY'], algorithm='HS256'
         )
     
+    
+    def get_id(self):
+        """Override get_id for Flask-Login compatibility"""
+        return str(self.id)
+    
+    def get_security_payload(self):
+        """For Flask-Security-Too token generation"""
+        return {
+            'id': self.id,
+            'email': self.email
+        }
+    
     @staticmethod
     def verify_reset_token(token):
         """Verify password reset token and return user"""
@@ -44,6 +70,13 @@ class User(UserMixin, db.Model):
         except:
             return None
         return User.query.get(id)
+    
+    def generate_fs_uniquifier(self):
+        """Generate Flask-Security uniquifier if not present"""
+        if not self.fs_uniquifier:
+            self.fs_uniquifier = secrets.token_urlsafe(32)
+            return self.fs_uniquifier
+        return self.fs_uniquifier
 
     def __repr__(self):
         return f'<User {self.username}>'

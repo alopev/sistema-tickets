@@ -1,0 +1,107 @@
+/* Simple Icon Fallback Solution */
+/* Since Framework7 icons font is having issues, use simple Unicode symbols */
+
+/* Base styling for all icons */
+.sidebar-icon i,
+.f7-icons,
+i.f7-icons {
+    font-family: "Segoe UI Symbol", "Apple Color Emoji", "Segoe UI Emoji", sans-serif !important;
+    font-style: normal !important;
+    font-weight: 400 !important;
+    font-size: 20px !important;
+    line-height: 1 !important;
+    text-align: center !important;
+    display: inline-block !important;
+    width: 22px !important;
+    height: 22px !important;
+}
+
+/* CRITICAL: Hide the original text content completely */
+.sidebar-icon i {
+    color: transparent !important;
+    font-size: 0 !important;
+    text-indent: -9999px !important;
+    overflow: hidden !important;
+    position: relative !important;
+}
+
+/* Show emoji icons via ::before */
+.sidebar-icon i::before {
+    color: inherit !important;
+    font-size: 20px !important;
+    position: absolute !important;
+    left: 50% !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    text-indent: 0 !important;
+}
+
+/* When sidebar is collapsed, increase icon size */
+body.sidebar-collapsed .sidebar-icon i::before {
+    font-size: 22px !important;
+}
+
+/* Icon mappings using ::before pseudo-element based on position */
+/* Dashboard */
+.sidebar-item:nth-child(2) .sidebar-icon i::before {
+    content: "📊" !important;
+}
+
+/* Tickets */
+.sidebar-item:nth-child(3) .sidebar-icon i::before {
+    content: "🎫" !important;
+}
+
+/* Usuarios (only if admin - 4th item when visible) */
+.sidebar-item:nth-child(4) .sidebar-icon i::before {
+    content: "👥" !important;
+}
+
+/* Configuración */
+.sidebar-item[title="Configuración"] .sidebar-icon i::before {
+    content: "⚙️" !important;
+}
+
+/* Reportes */
+.sidebar-item[title="Reportes"] .sidebar-icon i::before {
+    content: "📈" !important;
+}
+
+/* Auditoría */
+.sidebar-item[title="Auditoría"] .sidebar-icon i::before {
+    content: "📋" !important;
+}
+
+/* Ayuda */
+.sidebar-item[title="Ayuda"] .sidebar-icon i::before {
+    content: "❓" !important;
+}
+
+/* Topbar Icons */
+/* Hamburger menu icon */
+.sidebar-toggle i {
+    color: transparent !important;
+    font-size: 0 !important;
+    text-indent: -9999px !important;
+}
+
+.sidebar-toggle i::before {
+    content: "☰" !important;
+    font-size: 18px !important;
+    color: #e5e7eb !important;
+    text-indent: 0 !important;
+}
+
+/* Search icon */
+.search-btn i {
+    color: transparent !important;
+    font-size: 0 !important;
+    text-indent: -9999px !important;
+}
+
+.search-btn i::before {
+    content: "🔍" !important;
+    font-size: 16px !important;
+    color: #e5e7eb !important;
+    text-indent: 0 !important;
+}

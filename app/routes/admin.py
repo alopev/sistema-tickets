@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, jsonify
 from flask_login import current_user
 from app import db
 from app.models import User
@@ -23,72 +23,80 @@ def create_user():
         role = request.form['role']
         
         if User.query.filter_by(username=username).first():
-            error('El nombre de usuario ya existe.')
-            return redirect(url_for('admin.create_user'))
+            return jsonify({'success': False, 'message': 'El nombre de usuario ya existe.'}), 400
         
         # Password validation
         if len(password) < 8:
-            error('La contraseña debe tener al menos 8 caracteres.')
-            return redirect(url_for('admin.create_user'))
+            return jsonify({'success': False, 'message': 'La contraseña debe tener al menos 8 caracteres.'}), 400
         
         if not any(c.isupper() for c in password):
-            error('La contraseña debe contener al menos una letra mayúscula.')
-            return redirect(url_for('admin.create_user'))
+            return jsonify({'success': False, 'message': 'La contraseña debe contener al menos una letra mayúscula.'}), 400
         
         if not any(c.isdigit() for c in password):
-            error('La contraseña debe contener al menos un número.')
-            return redirect(url_for('admin.create_user'))
+            return jsonify({'success': False, 'message': 'La contraseña debe contener al menos un número.'}), 400
             
         user = User(username=username, email=email, role=role)
         user.set_password(password)
         db.session.add(user)
         db.session.commit()
-        success('Usuario creado exitosamente.')
-        return redirect(url_for('admin.users'))
+        return jsonify({'success': True, 'message': 'Usuario creado exitosamente.'})
         
     return render_template('admin/create_user.html')
 
-@bp.route('/user/<int:id>/reset_password', methods=['POST'])
-@admin_required
-def reset_password(id):
-    user = User.query.get_or_404(id)
-    new_password = request.form['new_password']
-    user.set_password(new_password)
-    db.session.commit()
-    success(f'Contraseña restablecida para {user.username}')
-    return redirect(url_for('admin.users'))
-
-@bp.route('/user/<int:id>/edit', methods=['GET', 'POST'])
+@bp.route('/user/<int:id>', methods=['GET', 'POST'])
 @admin_required
 def edit_user(id):
     user = User.query.get_or_404(id)
     if request.method == 'POST':
-        user.username = request.form['username']
-        user.email = request.form['email']
-        user.role = request.form['role']
-        
         try:
+            user.email = request.form['email']
+            user.role = request.form['role']
+            
+            # Handle password reset if provided
+            new_password = request.form.get('new_password')
+            if new_password:
+                user.set_password(new_password)
+            
             db.session.commit()
-            success('Usuario actualizado exitosamente.')
-            return redirect(url_for('admin.users'))
-        except:
+            return jsonify({'success': True, 'message': 'Usuario actualizado exitosamente.'})
+        except Exception as e:
             db.session.rollback()
-            error('Error al actualizar usuario. El nombre o email ya existen.')
+            return jsonify({'success': False, 'message': 'Error al actualizar usuario. El email ya existe.'}), 400
             
     return render_template('admin/edit_user.html', user=user)
+
+@bp.route('/api/users/<int:id>/details')
+@admin_required
+def user_details_json(id):
+    """Return user details as JSON for AJAX loading in modal"""
+    user = User.query.get_or_404(id)
+    
+    role_labels = {
+        'admin': 'Administrador',
+        'tecnico': 'Técnico',
+        'usuario': 'Usuario'
+    }
+    
+    return jsonify({
+        'id': user.id,
+        'username': user.username,
+        'email': user.email,
+        'role': user.role,
+        'role_label': role_labels.get(user.role, user.role),
+        'created_at': user.last_seen.strftime('%d/%m/%Y %H:%M') if hasattr(user, 'last_seen') and user.last_seen else 'N/A',
+        'last_login': user.last_login_at.strftime('%d/%m/%Y %H:%M') if hasattr(user, 'last_login_at') and user.last_login_at else None
+    })
 
 @bp.route('/user/<int:id>/delete', methods=['POST'])
 @admin_required
 def delete_user(id):
     user = User.query.get_or_404(id)
     if user.id == current_user.id:
-        warning('No puedes eliminar tu propio usuario.')
-        return redirect(url_for('admin.users'))
+        return jsonify({'success': False, 'message': 'No puedes eliminar tu propio usuario.'}), 400
         
     db.session.delete(user)
     db.session.commit()
-    success('Usuario eliminado exitosamente.')
-    return redirect(url_for('admin.users'))
+    return jsonify({'success': True, 'message': 'Usuario eliminado exitosamente.'})
 
 @bp.route('/audit_logs')
 @admin_required

@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Mesa de Servicio - Dashboard (F7 Enterprise + Gradient)</title>
+
+  <!-- Framework7 CSS -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/framework7@9.0.2/framework7-bundle.min.css"
+  />
+  <!-- Icons -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/framework7-icons@5.0.5/css/framework7-icons.css"
+  />
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div class="subtle-dots"></div>
+
+  <!-- Topbar -->
+  <header class="mds-topbar" role="banner">
+    <div class="brand">
+      <div class="brand-logo">MS</div>
+      <div class="brand-title">Mesa de Servicio</div>
+    </div>
+
+    <nav class="topnav" role="navigation" aria-label="Navegación principal">
+      <a href="dashboard-hibrido.html">Dashboard</a>
+      <a href="#">Usuarios</a>
+      <a href="#">Configuración</a>
+      <a href="#">Tickets</a>
+      <span class="divider"></span>
+      <span class="pill-time">
+        <i class="icon f7-icons" style="font-size:14px;">clock</i>
+        04:55
+      </span>
+    </nav>
+
+    <div class="top-right">
+      <span class="user-chip">
+        <span class="user-avatar">A</span>
+        <strong>Hola, admin</strong>
+      </span>
+      <a class="top-link" href="#">Mi Perfil</a>
+      <a class="top-link" href="#">Salir</a>
+      <span class="moon">🌙</span>
+
+      <div class="search-wrap">
+        <input class="search-input" type="search" placeholder="Buscar..." />
+        <button class="search-btn" aria-label="Buscar">
+          <i class="icon f7-icons" style="font-size:16px;">search</i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <main class="page-shell">
+
+    <div class="page-surface">
+      <div class="page-title">Dashboard</div>
+  
+      <!-- Stats -->
+      <section class="stats-grid">
+        <div class="stat-card stat-green">
+          <div class="stat-title">Total Tickets</div>
+          <div class="stat-value">0</div>
+        </div>
+        <div class="stat-card stat-purple">
+          <div class="stat-title">Abiertos</div>
+          <div class="stat-value">0</div>
+        </div>
+        <div class="stat-card stat-amber">
+          <div class="stat-title">En Proceso</div>
+          <div class="stat-value">0</div>
+        </div>
+        <div class="stat-card stat-red">
+          <div class="stat-title">Cerrados</div>
+          <div class="stat-value">0</div>
+        </div>
+      </section>
+  
+      <!-- Charts -->
+      <section class="charts-grid">
+        <div class="desktop-card">
+          <div class="desktop-card-header">Estado de Tickets</div>
+          <div class="desktop-card-body">
+            <div class="chart-placeholder"></div>
+            <div class="legend-row">
+              <span><i class="legend-dot ld-open"></i> Abiertos</span>
+              <span><i class="legend-dot ld-progress"></i> En Proceso</span>
+              <span><i class="legend-dot ld-closed"></i> Cerrados</span>
+            </div>
+          </div>
+        </div>
+  
+        <div class="desktop-card">
+          <div class="desktop-card-header">Prioridad de Tickets</div>
+          <div class="desktop-card-body">
+            <div class="chart-placeholder"></div>
+            <div class="legend-row" style="gap:26px;">
+              <span>Alta</span>
+              <span>Media</span>
+              <span>Baja</span>
+            </div>
+          </div>
+        </div>
+      </section>
+  
+      <!-- Quick actions -->
+      <section class="desktop-card">
+        <div class="desktop-card-header">Acciones Rápidas</div>
+        <div class="actions-card-body">
+          <div class="actions-grid">
+            <a class="action-btn btn-excel" href="#">Exportar Excel</a>
+            <a class="action-btn btn-pdf" href="#">Exportar PDF</a>
+            <a class="action-btn btn-csv" href="#">Exportar CSV</a>
+          </div>
+        </div>
+      </section>
+    </main>
+  
+    <!-- Floating chat -->
+    <div class="floating-chat">
+      <i class="icon f7-icons" style="font-size:14px;">chat_bubble_2_fill</i>
+      Chat Privado
+      <span class="plus">+</span>
+    </div>
+    </div>
+
+  <!-- Framework7 JS -->
+  <script src="https://cdn.jsdelivr.net/npm/framework7@9.0.2/framework7-bundle.min.js"></script>
+</body>
+</html>

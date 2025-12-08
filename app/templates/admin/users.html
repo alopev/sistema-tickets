@@ -1,51 +1,544 @@
-{% extends "base.html" %}
+{% extends "layouts/page_shell.html" %}
+
+{% block title %}Gestión de Usuarios - {{ system_settings.project_name if system_settings else 'Mesa de Servicio' }}{%
+endblock %}
 
 {% block content %}
-<h2>Gestión de Usuarios</h2>
-<div class="mb-3">
-    <a href="{{ url_for('admin.create_user') }}" class="btn btn-success">Crear Nuevo Usuario</a>
-    <a href="{{ url_for('admin.audit_logs') }}" class="btn btn-info">📜 Registro de Auditoría</a>
+<div class="page-title">Gestión de Usuarios</div>
+
+<!-- Stats Cards -->
+<section class="stats-grid-mini">
+    <div class="stat-mini stat-neutral">
+        <i class="fa-solid fa-users"></i>
+        <span>Total: {{ users|length }}</span>
+    </div>
+    <div class="stat-mini stat-blue">
+        <i class="fa-solid fa-user-shield"></i>
+        <span>Admins: {{ users|selectattr('role', 'equalto', 'admin')|list|length }}</span>
+    </div>
+    <div class="stat-mini stat-green">
+        <i class="fa-solid fa-user-gear"></i>
+        <span>Técnicos: {{ users|selectattr('role', 'equalto', 'tecnico')|list|length }}</span>
+    </div>
+    <div class="stat-mini stat-amber">
+        <i class="fa-solid fa-user"></i>
+        <span>Usuarios: {{ users|selectattr('role', 'equalto', 'usuario')|list|length }}</span>
+    </div>
+</section>
+
+<!-- Header Actions -->
+<div class="tickets-header">
+    <div class="filters-section">
+        <input type="text" class="search-input-inline" id="searchUsers" placeholder="Buscar usuarios...">
+        <select class="filter-select" id="filterRole">
+            <option value="">Todos los roles</option>
+            <option value="admin">Administrador</option>
+            <option value="tecnico">Técnico</option>
+            <option value="usuario">Usuario</option>
+        </select>
+    </div>
+    <div class="actions-section">
+        <!-- Audit button removed as per request (exists in sidebar) -->
+        <button class="btn-primary" onclick="openCreateUserModal()">
+            <i class="fa-solid fa-user-plus"></i>
+            Nuevo Usuario
+        </button>
+    </div>
 </div>
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Usuario</th>
-            <th>Email</th>
-            <th>Rol</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for user in users %}
-        <tr>
-            <td>{{ user.id }}</td>
-            <td>{{ user.username }}</td>
-            <td>{{ user.email }}</td>
-            <td>{{ user.role }}</td>
-            <td>
-                <div class="d-flex gap-2">
-                    <a href="{{ url_for('admin.edit_user', id=user.id) }}" class="btn btn-sm btn-primary">Editar</a>
+<!-- Users Table -->
+<div class="desktop-card">
+    <div class="desktop-card-header">
+        <i class="fa-solid fa-users"></i>
+        Lista de Usuarios
+    </div>
+    <div class="desktop-card-body p-0">
+        <table class="tickets-table" style="text-align: center;">
+            <thead>
+                <tr>
+                    <th style="text-align: center;"><i class="fa-solid fa-hashtag"></i> ID</th>
+                    <th style="text-align: center;"><i class="fa-solid fa-user"></i> Usuario</th>
+                    <th style="text-align: center;"><i class="fa-solid fa-envelope"></i> Email</th>
+                    <th style="text-align: center;"><i class="fa-solid fa-user-tag"></i> Rol</th>
+                    <th style="text-align: center;"><i class="fa-solid fa-gear"></i> Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="usersTableBody">
+                {% for user in users %}
+                <tr data-role="{{ user.role }}">
+                    <td><strong>{{ user.id }}</strong></td>
+                    <td class="user-name">{{ user.username }}</td>
+                    <td class="user-email">{{ user.email }}</td>
+                    <td>
+                        <span class="role-badge role-{{ user.role }}">
+                            <i
+                                class="fa-solid fa-{{ 'shield' if user.role == 'admin' else 'gear' if user.role == 'tecnico' else 'user' }}"></i>
+                            {{ user.role|capitalize }}
+                        </span>
+                    </td>
+                    <td>
+                        <button class="btn-icon btn-view" onclick="viewUser({{ user.id }})" title="Ver detalles">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                        <button class="btn-icon btn-edit" onclick="editUser({{ user.id }})" title="Editar">
+                            <i class="fa-solid fa-pen"></i>
+                        </button>
+                        <button class="btn-icon btn-delete"
+                            onclick="confirmDeleteUser({{ user.id }}, '{{ user.username }}')" title="Eliminar">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
-                    <form action="{{ url_for('admin.delete_user', id=user.id) }}" method="post"
-                        onsubmit="return confirm('¿Estás seguro de eliminar este usuario?');">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
-                    </form>
+        {% if not users %}
+        <div class="empty-state">
+            <i class="fa-solid fa-users-slash"></i>
+            <p>No hay usuarios para mostrar</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
 
-                    <form action="{{ url_for('admin.reset_password', id=user.id) }}" method="post" class="d-inline">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <div class="input-group input-group-sm">
-                            <input type="password" name="new_password" class="form-control"
-                                placeholder="Nueva contraseña" required>
-                            <button class="btn btn-warning" type="submit">Reset</button>
+<!-- Modal: Crear Usuario -->
+<div class="modal-overlay" id="createUserModal">
+    <div class="modal-container modal-container-wide">
+        <div class="modal-header">
+            <h3><i class="fa-solid fa-user-plus"></i> Crear Nuevo Usuario</h3>
+            <button class="modal-close" onclick="closeCreateUserModal()">
+                <i class="fa-solid fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form id="createUserForm">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                <div class="form-row-2col">
+                    <div class="form-col">
+                        <h4 class="form-section-title"><i class="fa-solid fa-id-card"></i> Datos de Acceso</h4>
+                        <div class="form-group">
+                            <label>Nombre de Usuario</label>
+                            <input type="text" name="username" class="form-input" required
+                                placeholder="Nombre de usuario...">
                         </div>
-                    </form>
+                        <div class="form-group">
+                            <label>Contraseña</label>
+                            <input type="password" name="password" class="form-input" required
+                                placeholder="Contraseña segura...">
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <h4 class="form-section-title"><i class="fa-solid fa-envelope"></i> Contacto</h4>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" name="email" class="form-input" required
+                                placeholder="correo@ejemplo.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Confirmar Contraseña</label>
+                            <input type="password" name="confirm_password" class="form-input" required
+                                placeholder="Confirmar contraseña...">
+                        </div>
+                    </div>
                 </div>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+
+                <div class="form-group" style="margin-top: 20px;">
+                    <label><i class="fa-solid fa-user-tag"></i> Rol (Permisos)</label>
+                    <select name="role" class="form-select" required>
+                        <option value="usuario" selected>Usuario - Acceso básico a tickets</option>
+                        <option value="tecnico">Técnico - Puede gestionar y resolver tickets</option>
+                        <option value="admin">Administrador - Acceso total al sistema</option>
+                    </select>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="closeCreateUserModal()">Cancelar</button>
+                    <button type="submit" class="btn-primary">
+                        <i class="fa-solid fa-check"></i>
+                        Crear Usuario
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Ver Usuario -->
+<div class="modal-overlay" id="viewUserModal">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h3><i class="fa-solid fa-user"></i> Detalles del Usuario</h3>
+            <button class="modal-close" onclick="closeViewUserModal()">
+                <i class="fa-solid fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body" id="viewUserContent">
+            <div class="loading-spinner">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                Cargando...
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Editar Usuario -->
+<div class="modal-overlay" id="editUserModal">
+    <div class="modal-container modal-container-wide">
+        <div class="modal-header">
+            <h3><i class="fa-solid fa-user-pen"></i> Editar Usuario</h3>
+            <button class="modal-close" onclick="closeEditUserModal()">
+                <i class="fa-solid fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body" id="editUserContent">
+            <div class="loading-spinner">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                Cargando...
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Confirmar Eliminación -->
+<div class="modal-overlay" id="deleteUserModal">
+    <div class="modal-container" style="max-width: 500px;">
+        <div class="modal-header">
+            <h3><i class="fa-solid fa-triangle-exclamation"></i> Confirmar Eliminación</h3>
+            <button class="modal-close" onclick="closeDeleteUserModal()">
+                <i class="fa-solid fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p style="font-size: 15px; color: var(--text-title); margin-bottom: 12px;">
+                ¿Estás seguro de eliminar al usuario <strong id="deleteUserName"></strong>?
+            </p>
+            <p style="font-size: 13px; color: var(--text-soft);">
+                <i class="fa-solid fa-exclamation-triangle"></i> Esta acción no se puede deshacer.
+            </p>
+            <input type="hidden" id="deleteUserId">
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeDeleteUserModal()">Cancelar</button>
+                <button type="button" class="btn-danger" onclick="deleteUser()">
+                    <i class="fa-solid fa-trash"></i>
+                    Eliminar Usuario
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Move modals to body
+    document.addEventListener('DOMContentLoaded', function () {
+        ['createUserModal', 'viewUserModal', 'editUserModal', 'deleteUserModal'].forEach(function (id) {
+            const modal = document.getElementById(id);
+            if (modal && modal.parentElement !== document.body) {
+                document.body.appendChild(modal);
+            }
+        });
+    });
+
+    // Create Modal
+    function openCreateUserModal() {
+        document.getElementById('createUserModal').classList.add('active');
+        document.getElementById('createUserModal').style.display = 'flex'; // Ensure display flex
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeCreateUserModal() {
+        document.getElementById('createUserModal').classList.remove('active');
+        setTimeout(() => document.getElementById('createUserModal').style.display = '', 300);
+        document.body.style.overflow = '';
+        document.getElementById('createUserForm').reset();
+    }
+
+    // View Modal
+    function openViewUserModal() {
+        document.getElementById('viewUserModal').classList.add('active');
+        document.getElementById('viewUserModal').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeViewUserModal() {
+        document.getElementById('viewUserModal').classList.remove('active');
+        setTimeout(() => document.getElementById('viewUserModal').style.display = '', 300);
+        document.body.style.overflow = '';
+    }
+
+    // Edit Modal
+    function openEditUserModal() {
+        document.getElementById('editUserModal').classList.add('active');
+        document.getElementById('editUserModal').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeEditUserModal() {
+        document.getElementById('editUserModal').classList.remove('active');
+        setTimeout(() => document.getElementById('editUserModal').style.display = '', 300);
+        document.body.style.overflow = '';
+    }
+
+    // Delete Modal
+    function openDeleteUserModal() {
+        document.getElementById('deleteUserModal').classList.add('active');
+        document.getElementById('deleteUserModal').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeDeleteUserModal() {
+        document.getElementById('deleteUserModal').classList.remove('active');
+        setTimeout(() => document.getElementById('deleteUserModal').style.display = '', 300);
+        document.body.style.overflow = '';
+    }
+
+    // Create User
+    document.getElementById('createUserForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+
+        // Validate passwords match
+        if (formData.get('password') !== formData.get('confirm_password')) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({ icon: 'error', title: 'Error', text: 'Las contraseñas no coinciden' });
+            }
+            return;
+        }
+
+        fetch('{{ url_for("admin.create_user") }}', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json().then(data => ({ status: response.status, body: data })))
+            .then(result => {
+                if (result.status === 200) {
+                    closeCreateUserModal();
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({ icon: 'success', title: 'Usuario creado', showConfirmButton: false, timer: 1500 });
+                    }
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    throw new Error(result.body.message || 'Error al crear usuario');
+                }
+            })
+            .catch(error => {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({ icon: 'error', title: 'Error', text: error.message });
+                }
+            });
+    });
+
+    // View User
+    function viewUser(userId) {
+        openViewUserModal();
+        const content = document.getElementById('viewUserContent');
+        content.innerHTML = '<div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Cargando...</div>';
+
+        fetch('/admin/api/users/' + userId + '/details')
+            .then(response => {
+                if (!response.ok) throw new Error('Error de red');
+                return response.json();
+            })
+            .then(data => {
+                content.innerHTML =
+                    '<div class="ticket-detail-view">' +
+                    '<h2>' + data.username + '</h2>' +
+                    '<div class="detail-meta">' +
+                    '<span><i class="fa-solid fa-envelope"></i> ' + data.email + '</span>' +
+                    '<span><i class="fa-solid fa-user-tag"></i> ' + data.role_label + '</span>' +
+                    '</div>' +
+                    '<div class="detail-description">' +
+                    '<h4>Información</h4>' +
+                    '<p><strong>Creado:</strong> ' + data.created_at + '</p>' +
+                    (data.last_login ? '<p><strong>Último login:</strong> ' + data.last_login + '</p>' : '') +
+                    '</div>' +
+                    '<div class="detail-actions">' +
+                    '<button class="btn-secondary" onclick="closeViewUserModal()">Cerrar</button>' +
+                    '<button class="btn-primary" onclick="closeViewUserModal(); editUser(' + userId + ');"><i class="fa-solid fa-pen"></i> Editar</button>' +
+                    '</div>' +
+                    '</div>';
+            })
+            .catch(error => {
+                console.error(error);
+                content.innerHTML = '<div class="error-state"><i class="fa-solid fa-exclamation-circle"></i><p>Error al cargar usuario</p></div>';
+            });
+    }
+
+    // Edit User
+    function editUser(userId) {
+        openEditUserModal();
+        const content = document.getElementById('editUserContent');
+        content.innerHTML = '<div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Cargando...</div>';
+
+        fetch('/admin/api/users/' + userId + '/details')
+            .then(response => {
+                if (!response.ok) throw new Error('Error loading user');
+                return response.json();
+            })
+            .then(data => {
+                content.innerHTML =
+                    '<form id="editUserForm">' +
+                    '<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">' +
+                    '<div class="form-row-2col">' +
+                    '<div class="form-col">' +
+                    '<h4 class="form-section-title"><i class="fa-solid fa-info-circle"></i> Información del Usuario</h4>' +
+                    '<div class="form-group"><label>Usuario</label><input type="text" class="form-input" value="' + data.username + '" disabled></div>' +
+                    '<div class="form-group"><label>Email</label><input type="email" name="email" class="form-input" value="' + data.email + '" required></div>' +
+                    '</div>' +
+                    '<div class="form-col">' +
+                    '<h4 class="form-section-title"><i class="fa-solid fa-cogs"></i> Gestión</h4>' +
+                    '<div class="form-group"><label><i class="fa-solid fa-user-tag"></i> Rol</label>' +
+                    '<select name="role" class="form-select">' +
+                    '<option value="usuario" ' + (data.role == 'usuario' ? 'selected' : '') + '>Usuario</option>' +
+                    '<option value="tecnico" ' + (data.role == 'tecnico' ? 'selected' : '') + '>Técnico</option>' +
+                    '<option value="admin" ' + (data.role == 'admin' ? 'selected' : '') + '>Administrador</option>' +
+                    '</select></div>' +
+                    '<div class="form-group">' +
+                    '<label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">' +
+                    '<input type="checkbox" id="resetPasswordCheck"> Resetear contraseña' +
+                    '</label></div>' +
+                    '<div class="form-group" id="passwordField" style="display: none;">' +
+                    '<label>Nueva Contraseña</label>' +
+                    '<input type="password" name="new_password" class="form-input" placeholder="Nueva contraseña...">' +
+                    '</div>' +
+                    '</div></div>' +
+                    '<div class="modal-footer">' +
+                    '<button type="button" class="btn-secondary" onclick="closeEditUserModal()">Cancelar</button>' +
+                    '<button type="submit" class="btn-primary"><i class="fa-solid fa-check"></i> Actualizar Usuario</button>' +
+                    '</div></form>';
+
+                // Toggle password field
+                document.getElementById('resetPasswordCheck').addEventListener('change', function () {
+                    document.getElementById('passwordField').style.display = this.checked ? 'block' : 'none';
+                });
+
+                // Submit handler
+                document.getElementById('editUserForm').addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    const formData = new FormData();
+                    formData.append('csrf_token', '{{ csrf_token() }}');
+                    formData.append('email', this.querySelector('[name="email"]').value);
+                    formData.append('role', this.querySelector('[name="role"]').value);
+
+                    const resetCheck = document.getElementById('resetPasswordCheck');
+                    if (resetCheck.checked) {
+                        const newPass = this.querySelector('[name="new_password"]').value;
+                        if (!newPass) {
+                            if (typeof Swal !== 'undefined') {
+                                Swal.fire({ icon: 'error', title: 'Error', text: 'Ingresa una nueva contraseña' });
+                            }
+                            return;
+                        }
+                        formData.append('new_password', newPass);
+                    }
+
+                    fetch('/admin/user/' + userId, {
+                        method: 'POST',
+                        body: formData
+                    })
+                        .then(response => response.json().then(data => ({ status: response.status, body: data })))
+                        .then(result => {
+                            if (result.status === 200 && result.body.success) {
+                                closeEditUserModal();
+                                if (typeof Swal !== 'undefined') {
+                                    Swal.fire({ icon: 'success', title: 'Usuario actualizado', showConfirmButton: false, timer: 1500 });
+                                }
+                                setTimeout(() => location.reload(), 1500);
+                            } else {
+                                throw new Error(result.body.message || 'Error al actualizar');
+                            }
+                        })
+                        .catch(error => {
+                            if (typeof Swal !== 'undefined') {
+                                Swal.fire({ icon: 'error', title: 'Error', text: error.message });
+                            }
+                        });
+                });
+            })
+            .catch(error => {
+                console.error(error);
+                content.innerHTML = '<div class="error-state"><p>Error al cargar</p></div>';
+            });
+    }
+
+    // Confirm Delete
+    function confirmDeleteUser(userId, username) {
+        document.getElementById('deleteUserId').value = userId;
+        document.getElementById('deleteUserName').textContent = username;
+        openDeleteUserModal();
+    }
+
+    // Delete User
+    function deleteUser() {
+        const userId = document.getElementById('deleteUserId').value;
+        const formData = new FormData();
+        formData.append('csrf_token', '{{ csrf_token() }}');
+
+        fetch('/admin/user/' + userId + '/delete', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json().then(data => ({ status: response.status, body: data })))
+            .then(result => {
+                if (result.status === 200 && result.body.success) {
+                    closeDeleteUserModal();
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({ icon: 'success', title: 'Usuario eliminado', showConfirmButton: false, timer: 1500 });
+                    }
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    throw new Error(result.body.message || 'Error al eliminar');
+                }
+            })
+            .catch(error => {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({ icon: 'error', title: 'Error', text: error.message });
+                }
+            });
+    }
+
+    // Filters
+    if (document.getElementById('searchUsers')) {
+        document.getElementById('searchUsers').addEventListener('keyup', filterUsers);
+    }
+    if (document.getElementById('filterRole')) {
+        document.getElementById('filterRole').addEventListener('change', filterUsers);
+    }
+
+    function filterUsers() {
+        const searchTerm = document.getElementById('searchUsers').value.toLowerCase();
+        const roleFilter = document.getElementById('filterRole').value;
+        const rows = document.querySelectorAll('#usersTableBody tr');
+
+        rows.forEach(function (row) {
+            const name = row.querySelector('.user-name').textContent.toLowerCase();
+            const email = row.querySelector('.user-email').textContent.toLowerCase();
+            const role = row.dataset.role;
+
+            const matchesSearch = name.includes(searchTerm) || email.includes(searchTerm);
+            const matchesRole = !roleFilter || role === roleFilter;
+
+            if (matchesSearch && matchesRole) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+
+    // Close on outside click
+    document.querySelectorAll('.modal-overlay').forEach(function (modal) {
+        modal.addEventListener('click', function (e) {
+            if (e.target === modal) {
+                modal.classList.remove('active');
+                setTimeout(() => modal.style.display = '', 300);
+                document.body.style.overflow = '';
+            }
+        });
+    });
+</script>
 {% endblock %}

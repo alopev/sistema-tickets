@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="es">
+<html lang="es" data-theme="business">
 
 <head>
     <meta charset="utf-8" />
@@ -16,20 +16,11 @@
     <link rel="shortcut icon"
         href="{{ url_for('static', filename=system_settings.favicon_path if system_settings else 'favicon.ico') }}">
 
-    <!-- Framework7 CSS (keeping for styling utilities) -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/framework7@9.0.2/framework7-bundle.min.css" />
+    <!-- Tailwind CSS + daisyUI -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
 
-    <!-- Font Awesome Icons (iOS-style) -->
+    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-    <!-- Main CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
-
-    <!-- Components CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/ionicons-components.css') }}">
-
-    <!-- Tickets Page CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/tickets-page.css') }}">
 
     <!-- Sweet Alert2 for notifications -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -37,19 +28,18 @@
     {% block extra_head %}{% endblock %}
 </head>
 
-<body>
+<body class="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900">
     <!-- Subtle dots background pattern -->
-    <div class="subtle-dots"></div>
+    <div class="fixed inset-0 opacity-20 pointer-events-none"
+        style="background-image: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 20px 20px;">
+    </div>
 
     <!-- Particle canvas for mouse interaction -->
-    <canvas id="particle-canvas"></canvas>
+    <canvas id="particle-canvas" class="fixed inset-0 pointer-events-none"></canvas>
 
     {% block body_content %}
     <!-- Page content goes here -->
     {% endblock %}
-
-    <!-- Framework7 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/framework7@9.0.2/framework7-bundle.min.js"></script>
 
     <!-- Socket.IO (for authenticated pages) -->
     {% if current_user and current_user.is_authenticated %}
@@ -79,6 +69,94 @@
                     timerProgressBar: true
                 });
             });
+        }
+    </script>
+
+    <!-- Particle Canvas Animation -->
+    <script>
+        const canvas = document.getElementById('particle-canvas');
+        if (canvas) {
+            const ctx = canvas.getContext('2d');
+            let width, height;
+            let particles = [];
+            let mouse = { x: null, y: null };
+
+            window.addEventListener('mousemove', (e) => {
+                mouse.x = e.clientX;
+                mouse.y = e.clientY;
+            });
+
+            function resize() {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+            }
+
+            window.addEventListener('resize', resize);
+            resize();
+
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * width;
+                    this.y = Math.random() * height;
+                    this.vx = (Math.random() - 0.5) * 0.5;
+                    this.vy = (Math.random() - 0.5) * 0.5;
+                    this.size = Math.random() * 2 + 1;
+                    this.color = `rgba(${Math.random() * 50 + 100}, ${Math.random() * 50 + 100}, 255, ${Math.random() * 0.5})`;
+                }
+
+                update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+
+                    if (mouse.x != null) {
+                        let dx = mouse.x - this.x;
+                        let dy = mouse.y - this.y;
+                        let distance = Math.sqrt(dx * dx + dy * dy);
+                        if (distance < 200) {
+                            const forceDirectionX = dx / distance;
+                            const forceDirectionY = dy / distance;
+                            const force = (200 - distance) / 200;
+                            this.vx += forceDirectionX * force * 0.5;
+                            this.vy += forceDirectionY * force * 0.5;
+                        }
+                    }
+
+                    this.vx *= 0.99;
+                    this.vy *= 0.99;
+
+                    if (this.x < 0 || this.x > width) this.vx = -this.vx;
+                    if (this.y < 0 || this.y > height) this.vy = -this.vy;
+                }
+
+                draw() {
+                    ctx.fillStyle = this.color;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            function initParticles() {
+                particles = [];
+                for (let i = 0; i < 100; i++) {
+                    particles.push(new Particle());
+                }
+            }
+
+            initParticles();
+
+            function animate() {
+                ctx.fillStyle = 'rgba(17, 24, 39, 0.2)';
+                ctx.fillRect(0, 0, width, height);
+
+                particles.forEach(p => {
+                    p.update();
+                    p.draw();
+                });
+                requestAnimationFrame(animate);
+            }
+
+            animate();
         }
     </script>
 

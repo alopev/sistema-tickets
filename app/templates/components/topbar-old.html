@@ -1,0 +1,56 @@
+<!-- Topbar Component -->
+<header class="mds-topbar" role="banner">
+    <div class="top-left">
+        <div class="brand">
+            <div class="brand-logo">
+                {% if system_settings and system_settings.project_name %}
+                {{ system_settings.project_name[:2].upper() }}
+                {% else %}
+                MS
+                {% endif %}
+            </div>
+            <div class="brand-title">
+                {{ system_settings.project_name if system_settings else 'Mesa de Servicio' }}
+            </div>
+            <button class="sidebar-toggle" type="button" aria-label="Alternar menú">
+                <i class="fa-solid fa-bars" style="font-size:18px;"></i>
+            </button>
+        </div>
+
+        <nav class="topnav" role="navigation" aria-label="Navegación principal">
+            <span class="divider"></span>
+            <span class="pill-time">
+                <span id="session-timer">
+                    <i class="fa-solid fa-clock" style="font-size:14px;"></i> 30:00
+                </span>
+            </span>
+            <span class="moon">🌙</span>
+        </nav>
+    </div>
+
+    <div class="top-center">
+        <div class="search-wrap">
+            <form action="{{ url_for('main.search') if current_user.is_authenticated else '#' }}" method="get"
+                style="display: flex; gap: 6px; width: 100%;">
+                <input class="search-input" type="search" name="q" placeholder="Buscar..." />
+                <button class="search-btn" type="submit" aria-label="Buscar">
+                    <i class="fa-solid fa-magnifying-glass" style="font-size:16px;"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="top-right">
+        {% if current_user and current_user.is_authenticated %}
+        <span class="user-chip">
+            <span class="user-avatar">{{ current_user.username[0].upper() }}</span>
+            <strong>Hola, {{ current_user.username }}</strong>
+        </span>
+        <span class="divider"></span>
+        <a class="top-link" href="{{ url_for('main.profile') }}">Mi Perfil</a>
+        <a class="top-link" href="{{ url_for('auth.logout') }}">Salir</a>
+        {% else %}
+        <a class="top-link" href="{{ url_for('auth.login') }}">Ingresar</a>
+        {% endif %}
+    </div>
+</header>

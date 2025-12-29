@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{% block title %}{{ system_settings.project_name if system_settings else 'Mesa de Servicio' }}{% endblock %}
+    </title>
+
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <meta name="theme-color" content="#1b1f24">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='icons/icon-192.png') }}">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon"
+        href="{{ url_for('static', filename=system_settings.favicon_path if system_settings else 'favicon.ico') }}">
+
+    <!-- Framework7 CSS (keeping for styling utilities) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/framework7@9.0.2/framework7-bundle.min.css" />
+
+    <!-- Font Awesome Icons (iOS-style) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+
+    <!-- Components CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/ionicons-components.css') }}">
+
+    <!-- Tickets Page CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tickets-page.css') }}">
+
+    <!-- Sweet Alert2 for notifications -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    {% block extra_head %}{% endblock %}
+</head>
+
+<body>
+    <!-- Subtle dots background pattern -->
+    <div class="subtle-dots"></div>
+
+    <!-- Particle canvas for mouse interaction -->
+    <canvas id="particle-canvas"></canvas>
+
+    {% block body_content %}
+    <!-- Page content goes here -->
+    {% endblock %}
+
+    <!-- Framework7 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/framework7@9.0.2/framework7-bundle.min.js"></script>
+
+    <!-- Socket.IO (for authenticated pages) -->
+    {% if current_user and current_user.is_authenticated %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+    {% endif %}
+
+    <!-- Main JS -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+    <!-- Chart.js (if needed) -->
+    {% block chart_js %}{% endblock %}
+
+    <!-- SweetAlert2 Handler for Flask Flash Messages -->
+    <script>
+        const alerts = {{ (get_alerts() if get_alerts else[]) | tojson | safe }};
+        if (alerts && alerts.length > 0) {
+            alerts.forEach(alert => {
+                Swal.fire({
+                    icon: alert.category,
+                    title: alert.category === 'success' ? '¡Éxito!' :
+                        alert.category === 'error' ? 'Error' :
+                            alert.category === 'warning' ? 'Advertencia' : 'Información',
+                    text: alert.message,
+                    confirmButtonText: 'OK',
+                    timer: alert.category === 'success' ? 3000 : undefined,
+                    timerProgressBar: true
+                });
+            });
+        }
+    </script>
+
+    {% block extra_scripts %}
+    <!-- Page-specific scripts -->
+    {% endblock %}
+</body>
+
+</html>

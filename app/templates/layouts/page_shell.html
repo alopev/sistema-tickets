@@ -1,37 +1,46 @@
 {% extends "layouts/base_layout.html" %}
 
 {% block body_content %}
-<!-- Topbar -->
-{% include "components/topbar.html" %}
-
-<!-- Layout híbrido: sidebar + content -->
-<div class="app-layout">
-    <!-- Sidebar -->
-    {% include "components/sidebar.html" %}
+<!-- daisyUI Drawer Layout (sidebar + main content) -->
+<div class="drawer lg:drawer-open">
+    <input id="drawer-toggle" type="checkbox" class="drawer-toggle" />
 
     <!-- Main content area -->
-    <main class="page-shell">
-        <div class="page-surface">
-            {% block content %}
-            <!-- Page content goes here -->
-            {% endblock %}
-        </div>
-    </main>
+    <div class="drawer-content flex flex-col">
+        <!-- Topbar -->
+        {% include "components/topbar.html" %}
+
+        <!-- Page content -->
+        <main class="flex-1 p-6 relative z-10">
+            <div class="max-w-7xl mx-auto">
+                {% block content %}
+                <!-- Page content goes here -->
+                {% endblock %}
+            </div>
+        </main>
+    </div>
+
+    <!-- Sidebar (drawer) -->
+    <div class="drawer-side z-50">
+        <label for="drawer-toggle" aria-label="close sidebar" class="drawer-overlay"></label>
+        {% include "components/sidebar.html" %}
+    </div>
 </div>
 
 <!-- Floating chat widget (for authenticated users) -->
 {% if current_user and current_user.is_authenticated %}
-<div id="chat-widget" style="position: fixed; bottom: 20px; right: 20px; width: 300px; z-index: 1000;">
-    <div class="card">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center"
-            style="cursor: pointer;" onclick="toggleChatList()">
-            <span>💬 Chat Privado</span>
-            <span id="chat-toggle-icon">+</span>
-        </div>
-        <div class="card-body p-0" id="chat-list-body"
-            style="display: none; height: 300px; overflow-y: auto; padding: 10px;">
-            <h6 class="mb-2 px-2">Usuarios Conectados</h6>
-            <div id="online-users-list"></div>
+<div id="chat-widget" class="fixed bottom-5 right-5 w-80 z-[1000]">
+    <div class="card glass-card">
+        <div class="card-body p-0">
+            <div class="flex justify-between items-center p-4 bg-primary text-white rounded-t-2xl cursor-pointer hover:bg-primary-focus transition-colors"
+                onclick="toggleChatList()">
+                <span class="font-semibold">💬 Chat Privado</span>
+                <span id="chat-toggle-icon" class="text-2xl font-bold">+</span>
+            </div>
+            <div id="chat-list-body" class="hidden h-80 overflow-y-auto p-4">
+                <h6 class="font-semibold mb-3 text-white">Usuarios Conectados</h6>
+                <div id="online-users-list"></div>
+            </div>
         </div>
     </div>
 </div>
@@ -47,9 +56,22 @@
         chatManager.init({{ current_user.id }});
     });
     {% endif %}
+
+    function toggleChatList() {
+        const chatListBody = document.getElementById('chat-list-body');
+        const toggleIcon = document.getElementById('chat-toggle-icon');
+
+        if (chatListBody.classList.contains('hidden')) {
+            chatListBody.classList.remove('hidden');
+            toggleIcon.textContent = '-';
+        } else {
+            chatListBody.classList.add('hidden');
+            toggleIcon.textContent = '+';
+        }
+    }
 </script>
 
-<!-- Chat window styles -->
+<!-- Chat window styles (using Tailwind utilities) -->
 <style>
     .chat-window {
         position: fixed;
@@ -57,7 +79,7 @@
         height: 450px;
         z-index: 999;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-        border-radius: 8px;
+        border-radius: 0.5rem;
         overflow: hidden;
     }
 
@@ -69,213 +91,6 @@
         height: 320px;
         overflow-y: auto;
         padding: 10px;
-    }
-
-    /* Bootstrap-like utility classes for chat compatibility */
-    .card {
-        background: white;
-        border: 1px solid rgba(0, 0, 0, 0.125);
-        border-radius: 8px;
-    }
-
-    .card-header {
-        padding: 10px 14px;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.125);
-    }
-
-    .card-body {
-        padding: 14px;
-    }
-
-    .bg-primary {
-        background-color: #1b66f9 !important;
-    }
-
-    .bg-warning {
-        background-color: #ffc107 !important;
-    }
-
-    .bg-danger {
-        background-color: #ef4444 !important;
-    }
-
-    .bg-info {
-        background-color: #06b6d4 !important;
-    }
-
-    .bg-light {
-        background-color: #f8f9fa !important;
-    }
-
-    .text-white {
-        color: white !important;
-    }
-
-    .text-white-50 {
-        color: rgba(255, 255, 255, 0.5) !important;
-    }
-
-    .text-muted {
-        color: #6c757d !important;
-    }
-
-    .text-success {
-        color: #16a34a !important;
-    }
-
-    .text-warning {
-        color: #f59e0b !important;
-    }
-
-    .text-secondary {
-        color: #6c757d !important;
-    }
-
-    .d-flex {
-        display: flex !important;
-    }
-
-    .align-items-center {
-        align-items: center !important;
-    }
-
-    .justify-content-between {
-        justify-content: space-between !important;
-    }
-
-    .rounded-circle {
-        border-radius: 50% !important;
-    }
-
-    .rounded-pill {
-        border-radius: 50rem !important;
-    }
-
-    .rounded-3 {
-        border-radius: 8px !important;
-    }
-
-    .d-inline-block {
-        display: inline-block !important;
-    }
-
-    .d-block {
-        display: block !important;
-    }
-
-    .px-2 {
-        padding-left: 0.5rem !important;
-        padding-right: 0.5rem !important;
-    }
-
-    .px-3 {
-        padding-left: 1rem !important;
-        padding-right: 1rem !important;
-    }
-
-    .py-2 {
-        padding-top: 0.5rem !important;
-        padding-bottom: 0.5rem !important;
-    }
-
-    .p-0 {
-        padding: 0 !important;
-    }
-
-    .p-2 {
-        padding: 0.5rem !important;
-    }
-
-    .mb-2 {
-        margin-bottom: 0.5rem !important;
-    }
-
-    .me-2 {
-        margin-right: 0.5rem !important;
-    }
-
-    .ms-auto {
-        margin-left: auto !important;
-    }
-
-    .badge {
-        display: inline-block;
-        padding: 0.25em 0.6em;
-        font-size: 0.75em;
-        font-weight: 700;
-        line-height: 1;
-        text-align: center;
-        white-space: nowrap;
-        vertical-align: baseline;
-    }
-
-    .btn {
-        display: inline-block;
-        font-weight: 400;
-        text-align: center;
-        vertical-align: middle;
-        cursor: pointer;
-        border: 1px solid transparent;
-        padding: 0.375rem 0.75rem;
-        font-size: 1rem;
-        line-height: 1.5;
-        border-radius: 0.25rem;
-        transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out;
-    }
-
-    .btn-sm {
-        padding: 0.25rem 0.5rem;
-        font-size: 0.875rem;
-    }
-
-    .btn-link {
-        color: #0d6efd;
-        text-decoration: none;
-        background: transparent;
-        border: none;
-    }
-
-    .btn-primary {
-        color: #fff;
-        background-color: #1b66f9;
-        border-color: #1b66f9;
-    }
-
-    .form-control {
-        display: block;
-        width: 100%;
-        padding: 0.375rem 0.75rem;
-        font-size: 1rem;
-        line-height: 1.5;
-        color: #212529;
-        background-color: #fff;
-        border: 1px solid #ced4da;
-        border-radius: 0.25rem;
-    }
-
-    .input-group {
-        position: relative;
-        display: flex;
-        flex-wrap: wrap;
-        align-items: stretch;
-        width: 100%;
-    }
-
-    .input-group-sm .form-control {
-        font-size: 0.875rem;
-        padding: 0.25rem 0.5rem;
-    }
-
-    .border-bottom {
-        border-bottom: 1px solid #dee2e6 !important;
-    }
-
-    .border-top {
-        border-top: 1px solid #dee2e6 !important;
-    }
-
-    .text-center {
-        text-align: center !important;
     }
 </style>
 {% endif %}

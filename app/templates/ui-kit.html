@@ -1,0 +1,754 @@
+{% extends "layouts/base_layout.html" %}
+
+{% block title %}UI Kit - Componentes Tailwind + daisyUI{% endblock %}
+
+{% block body_content %}
+<div class="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 p-8">
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-5xl font-bold text-white mb-4">🎨 UI Kit</h1>
+            <p class="text-xl text-gray-300">Componentes Tailwind CSS + daisyUI para Sistema de Tickets</p>
+            <div class="mt-4">
+                <span class="badge badge-primary badge-lg">Tailwind v4</span>
+                <span class="badge badge-secondary badge-lg ml-2">daisyUI v5</span>
+                <span class="badge badge-accent badge-lg ml-2">Theme: business</span>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="tabs tabs-boxed bg-white/10 backdrop-blur-lg mb-8 justify-center">
+            <a class="tab tab-active">Buttons</a>
+            <a class="tab">Forms</a>
+            <a class="tab">Cards</a>
+            <a class="tab">Modals</a>
+            <a class="tab">Tables</a>
+            <a class="tab">Stats</a>
+            <a class="tab">Alerts</a>
+            <a class="tab">Badges</a>
+        </div>
+
+        <!-- ===== SECTION: BUTTONS ===== -->
+        <div class="card glass-card mb-8">
+            <div class="card-body">
+                <h2 class="card-title text-2xl text-white mb-6">🔘 Buttons</h2>
+
+                <!-- Basic Buttons -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold text-white mb-3">Basic Buttons</h3>
+                    <div class="flex flex-wrap gap-3">
+                        <button class="btn">Default</button>
+                        <button class="btn btn-primary">Primary</button>
+                        <button class="btn btn-secondary">Secondary</button>
+                        <button class="btn btn-accent">Accent</button>
+                        <button class="btn btn-neutral">Neutral</button>
+                        <button class="btn btn-ghost">Ghost</button>
+                        <button class="btn btn-link">Link</button>
+                    </div>
+                </div>
+
+                <!-- Outline Buttons -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold text-white mb-3">Outline Buttons</h3>
+                    <div class="flex flex-wrap gap-3">
+                        <button class="btn btn-outline">Default</button>
+                        <button class="btn btn-outline btn-primary">Primary</button>
+                        <button class="btn btn-outline btn-secondary">Secondary</button>
+                        <button class="btn btn-outline btn-accent">Accent</button>
+                    </div>
+                </div>
+
+                <!-- States -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold text-white mb-3">States</h3>
+                    <div class="flex flex-wrap gap-3">
+                        <button class="btn btn-info">Info</button>
+                        <button class="btn btn-success">Success</button>
+                        <button class="btn btn-warning">Warning</button>
+                        <button class="btn btn-error">Error</button>
+                        <button class="btn" disabled>Disabled</button>
+                        <button class="btn btn-primary loading">Loading</button>
+                    </div>
+                </div>
+
+                <!-- Sizes -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold text-white mb-3">Sizes</h3>
+                    <div class="flex flex-wrap gap-3 items-center">
+                        <button class="btn btn-xs btn-primary">Tiny</button>
+                        <button class="btn btn-sm btn-primary">Small</button>
+                        <button class="btn btn-primary">Normal</button>
+                        <button class="btn btn-lg btn-primary">Large</button>
+                    </div>
+                </div>
+
+                <!-- Shapes -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold text-white mb-3">Shapes</h3>
+                    <div class="flex flex-wrap gap-3">
+                        <button class="btn btn-primary">Square</button>
+                        <button class="btn btn-primary btn-wide">Wide</button>
+                        <button class="btn btn-primary btn-block">Block (Full Width)</button>
+                        <button class="btn btn-circle btn-primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                        <button class="btn btn-square btn-primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Custom Brand Button -->
+                <div>
+                    <h3 class="text-lg font-semibold text-white mb-3">Custom Brand Button</h3>
+                    <button class="btn btn-brand">Brand Gradient Button</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== SECTION: FORMS ===== -->
+        <div class="card glass-card mb-8">
+            <div class="card-body">
+                <h2 class="card-title text-2xl text-white mb-6">📝 Forms</h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Inputs -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-white mb-3">Text Inputs</h3>
+                        <div class="space-y-3">
+                            <input type="text" placeholder="Default input" class="input input-bordered w-full" />
+                            <input type="text" placeholder="Primary input"
+                                class="input input-bordered input-primary w-full" />
+                            <input type="text" placeholder="Secondary input"
+                                class="input input-bordered input-secondary w-full" />
+                            <input type="text" placeholder="Accent input"
+                                class="input input-bordered input-accent w-full" />
+                            <input type="text" placeholder="Success input"
+                                class="input input-bordered input-success w-full" />
+                            <input type="text" placeholder="Warning input"
+                                class="input input-bordered input-warning w-full" />
+                            <input type="text" placeholder="Error input"
+                                class="input input-bordered input-error w-full" />
+                            <input type="text" placeholder="Disabled" class="input input-bordered w-full" disabled />
+                        </div>
+                    </div>
+
+                    <!-- Selects & Textareas -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-white mb-3">Select & Textarea</h3>
+                        <div class="space-y-3">
+                            <select class="select select-bordered w-full">
+                                <option disabled selected>Select option</option>
+                                <option>Option 1</option>
+                                <option>Option 2</option>
+                                <option>Option 3</option>
+                            </select>
+                            <select class="select select-bordered select-primary w-full">
+                                <option disabled selected>Primary select</option>
+                                <option>Homer</option>
+                                <option>Marge</option>
+                                <option>Bart</option>
+                            </select>
+                            <textarea class="textarea textarea-bordered w-full" placeholder="Textarea"></textarea>
+                            <textarea class="textarea textarea-bordered textarea-primary w-full"
+                                placeholder="Primary textarea"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Checkboxes & Radios -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-white mb-3">Checkboxes</h3>
+                        <div class="space-y-2">
+                            <div class="form-control">
+                                <label class="label cursor-pointer justify-start gap-3">
+                                    <input type="checkbox" class="checkbox" />
+                                    <span class="label-text text-white">Default</span>
+                                </label>
+                            </div>
+                            <div class="form-control">
+                                <label class="label cursor-pointer justify-start gap-3">
+                                    <input type="checkbox" checked class="checkbox checkbox-primary" />
+                                    <span class="label-text text-white">Primary</span>
+                                </label>
+                            </div>
+                            <div class="form-control">
+                                <label class="label cursor-pointer justify-start gap-3">
+                                    <input type="checkbox" checked class="checkbox checkbox-secondary" />
+                                    <span class="label-text text-white">Secondary</span>
+                                </label>
+                            </div>
+                            <div class="form-control">
+                                <label class="label cursor-pointer justify-start gap-3">
+                                    <input type="checkbox" checked class="checkbox checkbox-accent" />
+                                    <span class="label-text text-white">Accent</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Radios & Toggle -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-white mb-3">Radios & Toggle</h3>
+                        <div class="space-y-2">
+                            <div class="form-control">
+                                <label class="label cursor-pointer justify-start gap-3">
+                                    <input type="radio" name="radio-1" class="radio" checked />
+                                    <span class="label-text text-white">Radio 1</span>
+                                </label>
+                            </div>
+                            <div class="form-control">
+                                <label class="label cursor-pointer justify-start gap-3">
+                                    <input type="radio" name="radio-1" class="radio radio-primary" />
+                                    <span class="label-text text-white">Radio 2</span>
+                                </label>
+                            </div>
+                            <div class="form-control">
+                                <label class="label cursor-pointer justify-start gap-3">
+                                    <input type="checkbox" class="toggle" checked />
+                                    <span class="label-text text-white">Toggle</span>
+                                </label>
+                            </div>
+                            <div class="form-control">
+                                <label class="label cursor-pointer justify-start gap-3">
+                                    <input type="checkbox" class="toggle toggle-primary" checked />
+                                    <span class="label-text text-white">Primary Toggle</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- File Input -->
+                <div class="mt-6">
+                    <h3 class="text-lg font-semibold text-white mb-3">File Input</h3>
+                    <input type="file" class="file-input file-input-bordered w-full max-w-xs" />
+                    <input type="file" class="file-input file-input-bordered file-input-primary w-full max-w-xs ml-2" />
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== SECTION: CARDS ===== -->
+        <div class="card glass-card mb-8">
+            <div class="card-body">
+                <h2 class="card-title text-2xl text-white mb-6">🃏 Cards</h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Basic Card -->
+                    <div class="card bg-base-100 shadow-xl">
+                        <div class="card-body">
+                            <h2 class="card-title">Basic Card</h2>
+                            <p>This is a basic card with title and content.</p>
+                            <div class="card-actions justify-end">
+                                <button class="btn btn-primary btn-sm">Action</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card with Image -->
+                    <div class="card bg-base-100 shadow-xl">
+                        <figure class="px-10 pt-10">
+                            <div class="w-full h-40 bg-gradient-to-br from-primary to-secondary rounded-xl"></div>
+                        </figure>
+                        <div class="card-body">
+                            <h2 class="card-title">Card with Image</h2>
+                            <p>Card with image placeholder</p>
+                            <div class="card-actions justify-end">
+                                <button class="btn btn-primary btn-sm">View</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Glassmorphism Card -->
+                    <div class="card glass-card">
+                        <div class="card-body">
+                            <h2 class="card-title text-white">Glass Card</h2>
+                            <p class="text-gray-200">Custom glassmorphism effect</p>
+                            <div class="card-actions justify-end">
+                                <button class="btn btn-ghost text-white btn-sm">Ghost</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== SECTION: STATS ===== -->
+        <div class="card glass-card mb-8">
+            <div class="card-body">
+                <h2 class="card-title text-2xl text-white mb-6">📊 Stats Cards</h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                    <!-- Default daisyUI Stats -->
+                    <div class="stats shadow">
+                        <div class="stat">
+                            <div class="stat-title">Total Tickets</div>
+                            <div class="stat-value">142</div>
+                            <div class="stat-desc">↗︎ 12% (30 days)</div>
+                        </div>
+                    </div>
+
+                    <div class="stats shadow">
+                        <div class="stat">
+                            <div class="stat-title">Open Tickets</div>
+                            <div class="stat-value text-primary">45</div>
+                            <div class="stat-desc">21% of total</div>
+                        </div>
+                    </div>
+
+                    <div class="stats shadow">
+                        <div class="stat">
+                            <div class="stat-title">In Progress</div>
+                            <div class="stat-value text-secondary">32</div>
+                            <div class="stat-desc">↘︎ 5% this week</div>
+                        </div>
+                    </div>
+
+                    <div class="stats shadow">
+                        <div class="stat">
+                            <div class="stat-title">Closed</div>
+                            <div class="stat-value text-accent">65</div>
+                            <div class="stat-desc">↗︎ 18% this month</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Custom Gradient Stats -->
+                <h3 class="text-lg font-semibold text-white mb-3">Custom Gradient Stats</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="stat-success rounded-xl p-6">
+                        <div class="text-sm opacity-80">Total Tickets</div>
+                        <div class="text-4xl font-bold mt-2">142</div>
+                        <div class="text-sm mt-2 opacity-80">✓ All tickets</div>
+                    </div>
+
+                    <div class="stat-warning rounded-xl p-6">
+                        <div class="text-sm opacity-80">In Progress</div>
+                        <div class="text-4xl font-bold mt-2">32</div>
+                        <div class="text-sm mt-2 opacity-80">⚡ Active</div>
+                    </div>
+
+                    <div class="stat-error rounded-xl p-6">
+                        <div class="text-sm opacity-80">High Priority</div>
+                        <div class="text-4xl font-bold mt-2">8</div>
+                        <div class="text-sm mt-2 opacity-80">🔥 Urgent</div>
+                    </div>
+
+                    <div class="stat-info rounded-xl p-6">
+                        <div class="text-sm opacity-80">This Week</div>
+                        <div class="text-4xl font-bold mt-2">24</div>
+                        <div class="text-sm mt-2 opacity-80">📅 New tickets</div>
+                    </div>
+
+                    <div class="stat-primary rounded-xl p-6">
+                        <div class="text-sm opacity-80">Avg Response</div>
+                        <div class="text-4xl font-bold mt-2">2.5h</div>
+                        <div class="text-sm mt-2 opacity-80">⏱️ Response time</div>
+                    </div>
+
+                    <div class="stat-purple rounded-xl p-6">
+                        <div class="text-sm opacity-80">Satisfaction</div>
+                        <div class="text-4xl font-bold mt-2">98%</div>
+                        <div class="text-sm mt-2 opacity-80">⭐ Rating</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== SECTION: BADGES ===== -->
+        <div class="card glass-card mb-8">
+            <div class="card-body">
+                <h2 class="card-title text-2xl text-white mb-6">🏷️ Badges</h2>
+
+                <div class="space-y-4">
+                    <!-- Basic Badges -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-white mb-3">Basic Badges</h3>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="badge">Default</span>
+                            <span class="badge badge-neutral">Neutral</span>
+                            <span class="badge badge-primary">Primary</span>
+                            <span class="badge badge-secondary">Secondary</span>
+                            <span class="badge badge-accent">Accent</span>
+                            <span class="badge badge-ghost">Ghost</span>
+                        </div>
+                    </div>
+
+                    <!-- State Badges -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-white mb-3">State Badges</h3>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="badge badge-info">Info</span>
+                            <span class="badge badge-success">Success</span>
+                            <span class="badge badge-warning">Warning</span>
+                            <span class="badge badge-error">Error</span>
+                        </div>
+                    </div>
+
+                    <!-- Outline Badges -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-white mb-3">Outline Badges</h3>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="badge badge-outline">Default</span>
+                            <span class="badge badge-primary badge-outline">Primary</span>
+                            <span class="badge badge-secondary badge-outline">Secondary</span>
+                            <span class="badge badge-accent badge-outline">Accent</span>
+                        </div>
+                    </div>
+
+                    <!-- Sizes -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-white mb-3">Sizes</h3>
+                        <div class="flex flex-wrap gap-2 items-center">
+                            <span class="badge badge-xs badge-primary">XS</span>
+                            <span class="badge badge-sm badge-primary">SM</span>
+                            <span class="badge badge-primary">MD</span>
+                            <span class="badge badge-lg badge-primary">LG</span>
+                        </div>
+                    </div>
+
+                    <!-- Custom: Ticket States -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-white mb-3">Custom: Ticket States</h3>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="badge badge-error">Abierto</span>
+                            <span class="badge badge-warning">En Proceso</span>
+                            <span class="badge badge-success">Cerrado</span>
+                        </div>
+                    </div>
+
+                    <!-- Custom: Priorities -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-white mb-3">Custom: Priorities</h3>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="badge badge-error badge-outline">Alta</span>
+                            <span class="badge badge-warning badge-outline">Media</span>
+                            <span class="badge badge-info badge-outline">Baja</span>
+                        </div>
+                    </div>
+
+                    <!-- Custom: Roles -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-white mb-3">Custom: User Roles</h3>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="badge badge-primary">Admin</span>
+                            <span class="badge badge-secondary">Técnico</span>
+                            <span class="badge badge-ghost">Usuario</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== SECTION: ALERTS ===== -->
+        <div class="card glass-card mb-8">
+            <div class="card-body">
+                <h2 class="card-title text-2xl text-white mb-6">⚠️ Alerts</h2>
+
+                <div class="space-y-4">
+                    <div class="alert">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                            class="stroke-current shrink-0 w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span>Default alert - neutral information</span>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                            class="stroke-current shrink-0 w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span>Info alert - useful information</span>
+                    </div>
+
+                    <div class="alert alert-success">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>Success alert - your action completed!</span>
+                    </div>
+
+                    <div class="alert alert-warning">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                        <span>Warning alert - be careful!</span>
+                    </div>
+
+                    <div class="alert alert-error">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>Error alert - something went wrong!</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== SECTION: TABLES ===== -->
+        <div class="card glass-card mb-8">
+            <div class="card-body">
+                <h2 class="card-title text-2xl text-white mb-6">📋 Tables</h2>
+
+                <div class="overflow-x-auto">
+                    <table class="table table-zebra">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Ticket</th>
+                                <th>Status</th>
+                                <th>Priority</th>
+                                <th>Assigned To</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>TKT-2025-001</td>
+                                <td>Login issue on mobile app</td>
+                                <td><span class="badge badge-error">Abierto</span></td>
+                                <td><span class="badge badge-error badge-outline">Alta</span></td>
+                                <td>Juan Pérez</td>
+                                <td>
+                                    <button class="btn btn-xs btn-primary">View</button>
+                                    <button class="btn btn-xs btn-secondary">Edit</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>TKT-2025-002</td>
+                                <td>Password reset not working</td>
+                                <td><span class="badge badge-warning">En Proceso</span></td>
+                                <td><span class="badge badge-warning badge-outline">Media</span></td>
+                                <td>María García</td>
+                                <td>
+                                    <button class="btn btn-xs btn-primary">View</button>
+                                    <button class="btn btn-xs btn-secondary">Edit</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>TKT-2025-003</td>
+                                <td>Update user profile</td>
+                                <td><span class="badge badge-success">Cerrado</span></td>
+                                <td><span class="badge badge-info badge-outline">Baja</span></td>
+                                <td>Carlos Rodríguez</td>
+                                <td>
+                                    <button class="btn btn-xs btn-primary">View</button>
+                                    <button class="btn btn-xs btn-secondary">Edit</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== SECTION: MODALS ===== -->
+        <div class="card glass-card mb-8">
+            <div class="card-body">
+                <h2 class="card-title text-2xl text-white mb-6">🪟 Modals</h2>
+
+                <div class="flex flex-wrap gap-3">
+                    <button class="btn btn-primary" onclick="modal_basic.showModal()">Open Basic Modal</button>
+                    <button class="btn btn-secondary" onclick="modal_form.showModal()">Open Form Modal</button>
+                    <button class="btn btn-accent" onclick="modal_confirm.showModal()">Open Confirm Modal</button>
+                </div>
+
+                <!-- Basic Modal -->
+                <dialog id="modal_basic" class="modal">
+                    <div class="modal-box">
+                        <h3 class="font-bold text-lg">Basic Modal</h3>
+                        <p class="py-4">This is a basic modal using HTML &lt;dialog&gt; element. Press ESC key or click
+                            outside to close.</p>
+                        <div class="modal-action">
+                            <form method="dialog">
+                                <button class="btn">Close</button>
+                            </form>
+                        </div>
+                    </div>
+                    <form method="dialog" class="modal-backdrop">
+                        <button>close</button>
+                    </form>
+                </dialog>
+
+                <!-- Form Modal -->
+                <dialog id="modal_form" class="modal">
+                    <div class="modal-box">
+                        <h3 class="font-bold text-lg mb-4">Create New Ticket</h3>
+                        <form class="space-y-4">
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text">Title</span>
+                                </label>
+                                <input type="text" placeholder="Enter ticket title"
+                                    class="input input-bordered w-full" />
+                            </div>
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text">Description</span>
+                                </label>
+                                <textarea class="textarea textarea-bordered"
+                                    placeholder="Describe the issue"></textarea>
+                            </div>
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text">Priority</span>
+                                </label>
+                                <select class="select select-bordered w-full">
+                                    <option>Baja</option>
+                                    <option>Media</option>
+                                    <option>Alta</option>
+                                </select>
+                            </div>
+                        </form>
+                        <div class="modal-action">
+                            <form method="dialog">
+                                <button class="btn">Cancel</button>
+                                <button class="btn btn-primary ml-2">Create</button>
+                            </form>
+                        </div>
+                    </div>
+                    <form method="dialog" class="modal-backdrop">
+                        <button>close</button>
+                    </form>
+                </dialog>
+
+                <!-- Confirm Modal -->
+                <dialog id="modal_confirm" class="modal">
+                    <div class="modal-box">
+                        <h3 class="font-bold text-lg">Confirm Action</h3>
+                        <p class="py-4">Are you sure you want to delete this ticket? This action cannot be undone.</p>
+                        <div class="modal-action">
+                            <form method="dialog">
+                                <button class="btn">Cancel</button>
+                                <button class="btn btn-error ml-2">Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                    <form method="dialog" class="modal-backdrop">
+                        <button>close</button>
+                    </form>
+                </dialog>
+            </div>
+        </div>
+
+        <!-- ===== SECTION: LOADING & SKELETON ===== -->
+        <div class="card glass-card mb-8">
+            <div class="card-body">
+                <h2 class="card-title text-2xl text-white mb-6">⏳ Loading & Skeleton</h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Loading Spinner -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-white mb-3">Loading Spinners</h3>
+                        <div class="flex gap-4">
+                            <span class="loading loading-spinner loading-xs"></span>
+                            <span class="loading loading-spinner loading-sm"></span>
+                            <span class="loading loading-spinner loading-md"></span>
+                            <span class="loading loading-spinner loading-lg"></span>
+                        </div>
+                    </div>
+
+                    <!-- Skeleton -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-white mb-3">Skeleton Loaders</h3>
+                        <div class="flex flex-col gap-4">
+                            <div class="skeleton h-4 w-full"></div>
+                            <div class="skeleton h-4 w-3/4"></div>
+                            <div class="skeleton h-4 w-1/2"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Skeleton Card -->
+                <div class="mt-6">
+                    <h3 class="text-lg font-semibold text-white mb-3">Skeleton Card</h3>
+                    <div class="card bg-base-100 shadow-xl">
+                        <div class="card-body">
+                            <div class="skeleton h-8 w-1/2 mb-4"></div>
+                            <div class="skeleton h-4 w-full mb-2"></div>
+                            <div class="skeleton h-4 w-5/6 mb-2"></div>
+                            <div class="skeleton h-4 w-4/6"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== SECTION: AVATARS & DROPDOWNS ===== -->
+        <div class="card glass-card mb-8">
+            <div class="card-body">
+                <h2 class="card-title text-2xl text-white mb-6">👤 Avatars & Dropdowns</h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Avatars -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-white mb-3">Avatars</h3>
+                        <div class="flex gap-4 items-center">
+                            <div class="avatar">
+                                <div class="w-12 rounded-full">
+                                    <div
+                                        class="bg-gradient-to-br from-primary to-secondary w-full h-full flex items-center justify-center text-white font-bold">
+                                        JP
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="avatar">
+                                <div class="w-16 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
+                                    <div
+                                        class="bg-gradient-to-br from-secondary to-accent w-full h-full flex items-center justify-center text-white font-bold">
+                                        MG
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="avatar online">
+                                <div class="w-20 rounded-full">
+                                    <div
+                                        class="bg-gradient-to-br from-accent to-info w-full h-full flex items-center justify-center text-white font-bold">
+                                        CR
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dropdown -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-white mb-3">Dropdown</h3>
+                        <div class="dropdown">
+                            <div tabindex="0" role="button" class="btn m-1">Click</div>
+                            <ul tabindex="0"
+                                class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+                                <li><a>Item 1</a></li>
+                                <li><a>Item 2</a></li>
+                                <li><a>Item 3</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center text-white mt-12 pb-8">
+            <p class="text-lg">✨ UI Kit Ready for Migration ✨</p>
+            <p class="text-sm text-gray-400 mt-2">Sistema de Tickets - Tailwind CSS v4 + daisyUI v5</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

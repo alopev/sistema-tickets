@@ -579,3 +579,13 @@ def profile():
         return redirect(url_for('main.profile'))
     
     return render_template('profile.html')
+
+@bp.route('/ui-kit')
+@login_required
+def ui_kit():
+    """UI Kit page - reference for all Tailwind + daisyUI components"""
+    # Only accessible by admin for development/reference
+    from app.utils import admin_required
+    if current_user.role != 'admin':
+        return redirect(url_for('main.index'))
+    return render_template('ui-kit.html')

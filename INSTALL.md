@@ -71,9 +71,16 @@ Migrar el sistema de tickets de **Bootstrap 5.3.0** a **Tailwind CSS v4 + daisyU
 - ✅ CSS compilado
 - ✅ Primer commit
 
-### Fase 2: UI Kit y Base 🔄 50%
+### Fase 2: UI Kit y Base ✅ 100%
 - ✅ UI Kit creado (2025-12-29 15:47)
-- ⏳ Layouts base pendientes
+- ✅ Layouts base migrados (2025-12-29 15:59)
+  - base_layout.html (Framework7 → Tailwind)
+  - page_shell.html (drawer daisyUI)
+  - sidebar.html (menu daisyUI)  
+  - topbar.html (navbar daisyUI)
+
+### Fase 3: Páginas Principales ⏳ 0%
+- ⏳ Login pendiente
 
 ## 📁 Inventario de Templates
 

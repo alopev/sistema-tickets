@@ -534,7 +534,7 @@ SOFTWARE.
 ---
 
 <div align="center">
-  <sub>Desarrollado con ❤️ y mucho ☕ por Alvaro Guerra</sub>
+  <sub>Desarrollado con ❤️ y mucho ☕ en colaboración con Alvaro Guerra</sub>
   <br>
   <sub>Diseño moderno implementado con asistencia de Antigravity AI</sub>
 </div>

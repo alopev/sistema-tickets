@@ -1,0 +1,107 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+/* Rutas de templates para compilación */
+@source "../app/templates/**/*.html";
+@source "../app/static/js/**/*.js";
+
+/* Configuración de tema (se aplica en HTML con data-theme) */
+/* Temas disponibles: business, corporate, light, dark */
+
+/* Custom utilities - Glassmorphism adaptado a Tailwind */
+@layer utilities {
+    /* ========================================
+     GLASSMORPHISM EFFECTS
+     ======================================== */
+
+    .glass-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+
+    html[data-theme="dark"] .glass-card {
+        background: rgba(0, 0, 0, 0.1);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .glass-strong {
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(24px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+
+    html[data-theme="dark"] .glass-strong {
+        background: rgba(0, 0, 0, 0.2);
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .glass-subtle {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    html[data-theme="dark"] .glass-subtle {
+        background: rgba(0, 0, 0, 0.05);
+    }
+
+    /* ========================================
+     BRAND & CUSTOM BUTTONS
+     ======================================== */
+
+    .btn-brand {
+        background: linear-gradient(to right, rgb(29, 78, 216), rgb(124, 58, 237));
+        color: white;
+        font-weight: 600;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s;
+    }
+
+    .btn-brand:hover {
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        transform: scale(1.05);
+    }
+
+    /* ========================================
+     STAT CARDS CON GRADIENTES
+     ======================================== */
+
+    .stat-success {
+        background: linear-gradient(135deg, rgb(74, 222, 128), rgb(22, 163, 74));
+        color: white;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-warning {
+        background: linear-gradient(135deg, rgb(251, 191, 36), rgb(245, 158, 11));
+        color: white;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-error {
+        background: linear-gradient(135deg, rgb(248, 113, 113), rgb(239, 68, 68));
+        color: white;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-info {
+        background: linear-gradient(135deg, rgb(34, 211, 238), rgb(8, 145, 178));
+        color: white;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-primary {
+        background: linear-gradient(135deg, rgb(96, 165, 250), rgb(37, 99, 235));
+        color: white;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-purple {
+        background: linear-gradient(135deg, rgb(192, 132, 252), rgb(124, 58, 237));
+        color: white;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+}

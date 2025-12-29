@@ -3,8 +3,8 @@
   "version": "2.0.0",
   "description": "Sistema de Help Desk con Tailwind CSS + daisyUI",
   "scripts": {
-    "tw:dev": "npx @tailwindcss/cli -i ./assets/css/app.css -o ./app/static/css/app.css --watch",
-    "tw:build": "npx @tailwindcss/cli -i ./assets/css/app.css -o ./app/static/css/app.css --minify"
+    "tw:dev": "npx @tailwindcss/cli@latest -i ./assets/css/app.css -o ./app/static/css/app.css --watch --content './app/templates/**/*.html'",
+    "tw:build": "npx @tailwindcss/cli@latest -i ./assets/css/app.css -o ./app/static/css/app.css --minify --content './app/templates/**/*.html'"
   },
   "devDependencies": {
     "tailwindcss": "^4.0.0",

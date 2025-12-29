@@ -249,12 +249,18 @@
 
         <!-- Form Actions -->
         <div class="form-actions">
-            <a href="{{ url_for('main.index') }}" class="btn-secondary">
-                <i class="fa-solid fa-xmark"></i> Cancelar
-            </a>
-            <button type="submit" class="btn-primary">
-                <i class="fa-solid fa-save"></i> Guardar Cambios
-            </button>
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <a href="{{ url_for('main.index') }}" class="btn-secondary">
+                        <i class="fa-solid fa-xmark"></i> Cancelar
+                    </a>
+                </div>
+                <div class="col-md-6">
+                    <button type="submit" class="btn-primary">
+                        <i class="fa-solid fa-save"></i> Guardar Cambios
+                    </button>
+                </div>
+            </div>
         </div>
     </form>
 </div>

@@ -1,9 +1,7 @@
-"""
-Utility decorators and helpers for the application.
-"""
 from functools import wraps
 from flask import abort
 from flask_login import current_user
+from app.utils.audit import log_audit
 
 def admin_required(f):
     @wraps(f)

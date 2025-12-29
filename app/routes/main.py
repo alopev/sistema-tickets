@@ -203,6 +203,18 @@ def ticket_detail(id):
             
     return render_template('tickets/detail.html', ticket=ticket, technicians=technicians)
 
+@bp.route('/notifications/read/<int:id>')
+@login_required
+def mark_notification_read(id):
+    # Implementation placeholder - assumes logic exists or will be added
+    # This keeps existing routes working if they exist, or adds a stub
+    pass
+
+@bp.route('/reports')
+@login_required
+def reports():
+    return render_template('reports/index.html')
+
 @bp.route('/tickets/<int:id>/details')
 @login_required
 def ticket_details_json(id):
@@ -479,8 +491,24 @@ def search():
 @login_required
 def profile():
     if request.method == 'POST':
+        print("DEBUG: Profile POST request received")
         file = request.files.get('profile_picture')
-        if file and file.filename:
+        
+        if not file:
+            print("DEBUG: No file in request.files")
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest' or request.accept_mimetypes.json:
+                return {'success': False, 'message': 'No se seleccionó ningún archivo'}, 400
+            error('No se seleccionó ningún archivo')
+            return redirect(url_for('main.profile'))
+
+        if file.filename == '':
+            print("DEBUG: Empty filename")
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest' or request.accept_mimetypes.json:
+                 return {'success': False, 'message': 'Nombre de archivo vacío'}, 400
+            return redirect(url_for('main.profile'))
+
+        if file:
+            print(f"DEBUG: Processing file {file.filename}")
             from werkzeug.utils import secure_filename
             import os
             from flask import current_app
@@ -491,7 +519,11 @@ def profile():
             file_ext = filename.rsplit('.', 1)[1].lower() if '.' in filename else ''
             
             if file_ext not in allowed_extensions:
-                error('Formato de archivo no permitido. Use PNG, JPG, JPEG o GIF.')
+                print("DEBUG: Invalid extension")
+                msg = 'Formato de archivo no permitido. Use PNG, JPG, JPEG o GIF.'
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest' or request.accept_mimetypes.json:
+                    return {'success': False, 'message': msg}, 400
+                error(msg)
                 return redirect(url_for('main.profile'))
             
             # Validate file size (2MB max)
@@ -500,20 +532,49 @@ def profile():
             file.seek(0)
             
             if file_size > 2 * 1024 * 1024:  # 2MB
-                error('El archivo es demasiado grande. Máximo 2MB.')
+                print("DEBUG: File too large")
+                msg = 'El archivo es demasiado grande. Máximo 2MB.'
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest' or request.accept_mimetypes.json:
+                    return {'success': False, 'message': msg}, 400
+                error(msg)
                 return redirect(url_for('main.profile'))
             
-            # Save with unique filename
-            filename = f'profile_{current_user.id}_{datetime.now().strftime("%Y%m%d%H%M%S")}.{file_ext}'
-            os.makedirs(current_app.config['UPLOAD_FOLDER'], exist_ok=True)
-            filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
-            file.save(filepath)
-            
-            # Update user profile picture
-            current_user.profile_picture = filename
-            db.session.commit()
-            
-            success('Foto de perfil actualizada exitosamente!')
+            try:
+                # Save with unique filename
+                new_filename = f'profile_{current_user.id}_{datetime.now().strftime("%Y%m%d%H%M%S")}.{file_ext}'
+                os.makedirs(current_app.config['UPLOAD_FOLDER'], exist_ok=True)
+                filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], new_filename)
+                
+                print(f"DEBUG: Saving to {filepath}")
+                file.save(filepath)
+                
+                # Update user profile picture
+                current_user.profile_picture = new_filename
+                db.session.commit()
+                print("DEBUG: Database updated")
+
+                # Audit Log
+                try:
+                    from app.utils.audit import log_audit
+                    log_audit('profile_updated', f'Usuario {current_user.username} actualizó su foto de perfil')
+                except Exception as e:
+                    print(f"Error logging audit: {e}")
+                
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest' or request.accept_mimetypes.json:
+                    return {
+                        'success': True, 
+                        'message': 'Foto de perfil actualizada exitosamente!',
+                        'new_image_url': url_for('static', filename=current_user.get_profile_picture())
+                    }
+                
+                success('Foto de perfil actualizada exitosamente!')
+            except Exception as e:
+                print(f"DEBUG: Error saving file: {e}")
+                db.session.rollback()
+                msg = f'Error al guardar la imagen: {str(e)}'
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest' or request.accept_mimetypes.json:
+                    return {'success': False, 'message': msg}, 500
+                error(msg)
         
         return redirect(url_for('main.profile'))
     

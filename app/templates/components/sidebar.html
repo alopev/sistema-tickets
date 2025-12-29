@@ -44,7 +44,8 @@
     </a>
     {% endif %}
 
-    <a class="sidebar-item" href="#" title="Reportes">
+    <a class="sidebar-item {% if request.endpoint == 'main.reports' %}active{% endif %}"
+        href="{{ url_for('main.reports') }}" title="Reportes">
         <span class="sidebar-icon">
             <i class="fa-solid fa-chart-column"></i>
         </span>

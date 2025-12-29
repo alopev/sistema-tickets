@@ -1,58 +1,476 @@
-{% extends "base.html" %}
+{% extends "layouts/page_shell.html" %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-8 offset-md-2">
-        <div class="card">
-            <div class="card-header">
-                <h4>Mi Perfil</h4>
+<!-- Preloader -->
+<div id="profile-preloader"
+    style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.95); z-index: 99999; display: flex; justify-content: center; align-items: center; flex-direction: column;">
+    <div class="loader-3d"
+        style="position: relative; width: calc(32px * 4 + 4px * 6); height: calc(32px * 2 + 4px * 4); transform-style: preserve-3d; transform: rotateX(-20deg) rotateY(-45deg);">
+        <div class="box"
+            style="position: absolute; width: 32px; height: 32px; border-radius: 4px; background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%); transform-style: preserve-3d; animation: flip 1600ms cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite; box-shadow: 0 0 20px rgba(168, 85, 247, 0.4); left: 0; top: 0; animation-delay: -1400ms;">
+        </div>
+        <div class="box"
+            style="position: absolute; width: 32px; height: 32px; border-radius: 4px; background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%); transform-style: preserve-3d; animation: flip 1600ms cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite; box-shadow: 0 0 20px rgba(168, 85, 247, 0.4); left: calc(32px * 1 + 4px * 2); top: 0; animation-delay: -1200ms;">
+        </div>
+        <div class="box"
+            style="position: absolute; width: 32px; height: 32px; border-radius: 4px; background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%); transform-style: preserve-3d; animation: flip 1600ms cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite; box-shadow: 0 0 20px rgba(168, 85, 247, 0.4); left: calc(32px * 2 + 4px * 4); top: 0; animation-delay: -1000ms;">
+        </div>
+        <div class="box"
+            style="position: absolute; width: 32px; height: 32px; border-radius: 4px; background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%); transform-style: preserve-3d; animation: flip 1600ms cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite; box-shadow: 0 0 20px rgba(168, 85, 247, 0.4); left: calc(32px * 3 + 4px * 6); top: 0; animation-delay: -800ms;">
+        </div>
+        <div class="box"
+            style="position: absolute; width: 32px; height: 32px; border-radius: 4px; background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%); transform-style: preserve-3d; animation: flip 1600ms cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite; box-shadow: 0 0 20px rgba(168, 85, 247, 0.4); left: 0; top: calc(32px * 1 + 4px * 2); animation-delay: -600ms;">
+        </div>
+        <div class="box"
+            style="position: absolute; width: 32px; height: 32px; border-radius: 4px; background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%); transform-style: preserve-3d; animation: flip 1600ms cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite; box-shadow: 0 0 20px rgba(168, 85, 247, 0.4); left: calc(32px * 1 + 4px * 2); top: calc(32px * 1 + 4px * 2); animation-delay: -400ms;">
+        </div>
+        <div class="box"
+            style="position: absolute; width: 32px; height: 32px; border-radius: 4px; background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%); transform-style: preserve-3d; animation: flip 1600ms cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite; box-shadow: 0 0 20px rgba(168, 85, 247, 0.4); left: calc(32px * 2 + 4px * 4); top: calc(32px * 1 + 4px * 2); animation-delay: -200ms;">
+        </div>
+        <div class="box"
+            style="position: absolute; width: 32px; height: 32px; border-radius: 4px; background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%); transform-style: preserve-3d; animation: flip 1600ms cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite; box-shadow: 0 0 20px rgba(168, 85, 247, 0.4); left: calc(32px * 3 + 4px * 6); top: calc(32px * 1 + 4px * 2); animation-delay: 0ms;">
+        </div>
+    </div>
+    <div
+        style="margin-top: 60px; font-size: 18px; font-weight: 600; color: var(--c-purple); letter-spacing: 2px; text-transform: uppercase;">
+        CARGANDO PERFIL</div>
+</div>
+
+<!-- Page Title -->
+<h1 class="page-title">
+    <i class="fa-solid fa-user"></i> Mi Perfil
+</h1>
+
+<!-- Stats Cards Mini -->
+<div class="stats-grid">
+    <div class="stat-card stat-purple">
+        <div class="stat-title">Usuario</div>
+        <div class="stat-value">{{ current_user.username }}</div>
+    </div>
+    <div class="stat-card stat-cyan">
+        <div class="stat-title">Email</div>
+        <div class="stat-value">{{ current_user.email[:20] }}...</div>
+    </div>
+    <div class="stat-card stat-green">
+        <div class="stat-title">Rol</div>
+        <div class="stat-value">
+            {% if current_user.role == 'admin' %}
+            <i class="fa-solid fa-user-shield"></i>
+            {% elif current_user.role == 'tecnico' %}
+            <i class="fa-solid fa-user-gear"></i>
+            {% else %}
+            <i class="fa-solid fa-user"></i>
+            {% endif %}
+        </div>
+    </div>
+    <div class="stat-card stat-amber">
+        <div class="stat-title">Miembro Desde</div>
+        <div class="stat-value">{{ current_user.created_at.strftime('%Y') if current_user.created_at else '2024' }}
+        </div>
+    </div>
+</div>
+
+<!-- Profile Card -->
+<div class="desktop-card profile-card">
+    <div class="profile-content">
+        <!-- Left Column: Profile Picture -->
+        <div class="profile-picture-section">
+            <div class="profile-picture-container">
+                <img src="{{ url_for('static', filename=current_user.get_profile_picture()) }}" alt="Profile Picture"
+                    id="profilePreview" class="profile-picture-img">
             </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-4 text-center">
-                        <img src="{{ url_for('static', filename=current_user.get_profile_picture()) }}"
-                            alt="Profile Picture" class="img-fluid rounded-circle mb-3"
-                            style="max-width: 200px; max-height: 200px; object-fit: cover;">
 
-                        <form method="POST" enctype="multipart/form-data">
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            <div class="mb-3">
-                                <label for="profile_picture" class="form-label">Cambiar Foto de Perfil</label>
-                                <input type="file" class="form-control" id="profile_picture" name="profile_picture"
-                                    accept="image/*">
-                                <small class="text-muted">Formatos: JPG, PNG, GIF (máx. 2MB)</small>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Actualizar Foto</button>
-                        </form>
-                    </div>
+            <form method="POST" enctype="multipart/form-data" id="profileForm">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
 
-                    <div class="col-md-8">
-                        <h5>Información del Usuario</h5>
-                        <hr>
-                        <div class="mb-3">
-                            <strong>Nombre de Usuario:</strong>
-                            <p>{{ current_user.username }}</p>
-                        </div>
-                        <div class="mb-3">
-                            <strong>Email:</strong>
-                            <p>{{ current_user.email }}</p>
-                        </div>
-                        <div class="mb-3">
-                            <strong>Rol:</strong>
-                            <p>
-                                {% if current_user.role == 'admin' %}
-                                <span class="badge bg-primary">Administrador</span>
-                                {% elif current_user.role == 'tecnico' %}
-                                <span class="badge bg-success">Técnico</span>
-                                {% else %}
-                                <span class="badge bg-info">Usuario</span>
-                                {% endif %}
-                            </p>
-                        </div>
+                <div class="form-group">
+                    <label for="profile_picture" class="form-label">
+                        <i class="fa-solid fa-camera"></i> Cambiar Foto de Perfil
+                    </label>
+                    <input type="file" class="form-file" id="profile_picture" name="profile_picture" accept="image/*"
+                        onchange="previewProfileImage(event)">
+                    <small class="form-help">
+                        <i class="fa-solid fa-info-circle"></i>
+                        Formatos: JPG, PNG, GIF (máx. 2MB)
+                    </small>
+                </div>
+
+                <button type="submit" class="btn-primary">
+                    <i class="fa-solid fa-save"></i> Actualizar Foto
+                </button>
+            </form>
+        </div>
+
+        <!-- Right Column: User Information -->
+        <div class="profile-info-section">
+            <h3 class="profile-section-title">
+                <i class="fa-solid fa-id-card"></i> Información del Usuario
+            </h3>
+
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">
+                        <i class="fa-solid fa-user"></i> Nombre de Usuario
                     </div>
+                    <div class="info-value">{{ current_user.username }}</div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">
+                        <i class="fa-solid fa-envelope"></i> Email
+                    </div>
+                    <div class="info-value">{{ current_user.email }}</div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">
+                        <i class="fa-solid fa-shield-halved"></i> Rol
+                    </div>
+                    <div class="info-value">
+                        {% if current_user.role == 'admin' %}
+                        <span class="role-badge role-admin">Administrador</span>
+                        {% elif current_user.role == 'tecnico' %}
+                        <span class="role-badge role-tecnico">Técnico</span>
+                        {% else %}
+                        <span class="role-badge role-usuario">Usuario</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">
+                        <i class="fa-solid fa-calendar-plus"></i> Fecha de Registro
+                    </div>
+                    <div class="info-value">{{ current_user.created_at.strftime('%d/%m/%Y') if current_user.created_at
+                        else 'N/A' }}</div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    /* Profile Page Specific Styles */
+    .profile-card {
+        margin-top: 20px;
+        padding: 32px;
+    }
+
+    .profile-content {
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        gap: 40px;
+    }
+
+    /* Profile Picture Section */
+    .profile-picture-section {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .profile-picture-container {
+        padding: 20px;
+        background: linear-gradient(135deg, rgba(168, 85, 247, 0.05) 0%, rgba(147, 51, 234, 0.05) 100%);
+        border-radius: 16px;
+        border: 2px dashed rgba(168, 85, 247, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .profile-picture-img {
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid white;
+        box-shadow: 0 8px 24px rgba(168, 85, 247, 0.2);
+        transition: transform 0.3s ease;
+    }
+
+    .profile-picture-img:hover {
+        transform: scale(1.05);
+    }
+
+    /* Profile Info Section */
+    .profile-info-section {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .profile-section-title {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--text-title);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 0;
+        padding-bottom: 16px;
+        border-bottom: 2px solid rgba(2, 6, 23, .08);
+    }
+
+    .profile-section-title i {
+        color: var(--c-purple);
+        font-size: 24px;
+    }
+
+    .info-grid {
+        display: grid;
+        gap: 20px;
+    }
+
+    .info-item {
+        padding: 20px;
+        background: #f8fafc;
+        border-radius: 10px;
+        border: 1px solid rgba(2, 6, 23, .08);
+        transition: all 0.2s;
+    }
+
+    .info-item:hover {
+        border-color: var(--c-purple);
+        box-shadow: 0 4px 12px rgba(168, 85, 247, 0.1);
+    }
+
+    .info-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-muted);
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .info-label i {
+        opacity: 0.7;
+    }
+
+    .info-value {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text-title);
+    }
+
+    /* Form Styles */
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-soft);
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .form-label i {
+        opacity: 0.7;
+    }
+
+    .form-file {
+        width: 100%;
+        padding: 10px 14px;
+        border: 1px solid rgba(2, 6, 23, .12);
+        border-radius: 8px;
+        font-size: 13px;
+        background: white;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .form-file:hover {
+        border-color: var(--c-purple);
+    }
+
+    .form-help {
+        display: block;
+        font-size: 12px;
+        color: var(--text-muted);
+        margin-top: 6px;
+    }
+
+    .btn-primary {
+        width: 100%;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border: none;
+        background: linear-gradient(135deg, var(--c-purple) 0%, #9333ea 100%);
+        color: white;
+        white-space: nowrap;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(168, 85, 247, 0.3);
+    }
+
+    /* Role Badges */
+    .role-badge {
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .role-badge.role-admin {
+        background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%);
+        color: white;
+    }
+
+    .role-badge.role-tecnico {
+        background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+        color: white;
+    }
+
+    .role-badge.role-usuario {
+        background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+        color: white;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .profile-content {
+            grid-template-columns: 1fr;
+        }
+
+        .profile-picture-img {
+            width: 150px;
+            height: 150px;
+        }
+    }
+
+    /* Preloader Animation */
+    @keyframes flip {
+        0% {
+            transform: rotateY(0deg) rotateX(0deg) translateZ(0);
+        }
+
+        25% {
+            transform: rotateY(90deg) rotateX(0deg) translateZ(0);
+        }
+
+        50% {
+            transform: rotateY(180deg) rotateX(0deg) translateZ(0);
+        }
+
+        75% {
+            transform: rotateY(270deg) rotateX(0deg) translateZ(0);
+        }
+
+        100% {
+            transform: rotateY(360deg) rotateX(0deg) translateZ(0);
+        }
+    }
+</style>
+
+<script>
+    // Hide preloader after page loads
+    window.addEventListener('load', function () {
+        setTimeout(function () {
+            const preloader = document.getElementById('profile-preloader');
+            if (preloader) {
+                preloader.style.opacity = '0';
+                preloader.style.transition = 'opacity 0.5s ease';
+                setTimeout(function () {
+                    preloader.style.display = 'none';
+                }, 500);
+            }
+        }, 1500);
+    });
+
+    // Preview profile image before upload
+    function previewProfileImage(event) {
+        const input = event.target;
+        const preview = document.getElementById('profilePreview');
+
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                preview.src = e.target.result;
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    // Form submission with SweetAlert
+    document.getElementById('profileForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(e.target);
+
+        Swal.fire({
+            title: 'Actualizando...',
+            text: 'Subiendo foto de perfil',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        // Add header to request JSON response
+        fetch('{{ url_for("main.profile") }}', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            }
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    return response.json().then(data => {
+                        throw new Error(data.message || 'Error en el servidor');
+                    }).catch(err => {
+                        // Fallback if response is not valid JSON
+                        if (err.message) throw err;
+                        throw new Error('Error en la respuesta del servidor (' + response.status + ')');
+                    });
+                }
+            })
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Éxito!',
+                        text: data.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                } else {
+                    throw new Error(data.message || 'Error desconocido');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: error.message || 'No se pudo actualizar la foto de perfil'
+                });
+            });
+    });
+</script>
 {% endblock %}

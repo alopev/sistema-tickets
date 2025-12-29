@@ -79,8 +79,11 @@ Migrar el sistema de tickets de **Bootstrap 5.3.0** a **Tailwind CSS v4 + daisyU
   - sidebar.html (menu daisyUI)  
   - topbar.html (navbar daisyUI)
 
-### Fase 3: Páginas Principales ⏳ 0%
-- ⏳ Login pendiente
+### Fase 3: Páginas Principales 🔄 6%
+- ✅ Login migrado (2025-12-29 16:12)
+- ⏳ Dashboard pendiente
+- ⏳ Tickets (0/3 páginas)
+- ⏳ Profile pendiente
 
 ## 📁 Inventario de Templates
 

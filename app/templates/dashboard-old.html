@@ -1,0 +1,175 @@
+{% extends "layouts/page_shell.html" %}
+
+{% block title %}Dashboard - {{ system_settings.project_name if system_settings else 'Mesa de Servicio' }}{% endblock %}
+
+{% block content %}
+<div class="page-title">Dashboard</div>
+
+<!-- Stats -->
+<section class="stats-grid">
+    <div class="stat-card stat-green">
+        <div class="stat-title">Total Tickets</div>
+        <div class="stat-value">{{ total }}</div>
+    </div>
+    <div class="stat-card stat-purple">
+        <div class="stat-title">Abiertos</div>
+        <div class="stat-value">{{ open }}</div>
+    </div>
+    <div class="stat-card stat-amber">
+        <div class="stat-title">En Proceso</div>
+        <div class="stat-value">{{ process }}</div>
+    </div>
+    <div class="stat-card stat-red">
+        <div class="stat-title">Cerrados</div>
+        <div class="stat-value">{{ closed }}</div>
+    </div>
+</section>
+
+<!-- Charts -->
+<section class="charts-grid">
+    <div class="desktop-card">
+        <div class="desktop-card-header">Estado de Tickets</div>
+        <div class="desktop-card-body">
+            <canvas id="statusChart"></canvas>
+        </div>
+    </div>
+
+    <div class="desktop-card">
+        <div class="desktop-card-header">Prioridad de Tickets</div>
+        <div class="desktop-card-body">
+            <canvas id="priorityChart"></canvas>
+        </div>
+    </div>
+</section>
+
+<!-- Quick actions -->
+<section class="desktop-card">
+    <div class="desktop-card-header">Acciones Rápidas</div>
+    <div class="actions-card-body">
+        <div class="actions-grid">
+            <a class="action-btn btn-excel" href="{{ url_for('main.export_excel') }}">Exportar Excel</a>
+            <a class="action-btn btn-pdf" href="{{ url_for('main.export_pdf') }}">Exportar PDF</a>
+            <a class="action-btn btn-csv" href="{{ url_for('main.export_csv') }}">Exportar CSV</a>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block chart_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    (function () {
+        'use strict';
+
+        // Wait for Chart.js to be ready
+        if (typeof Chart === 'undefined') {
+            console.error('Chart.js is not loaded!');
+            return;
+        }
+
+
+        const statusData = {{ status_data | tojson
+    }};
+    const priorityData = {{ priority_data | tojson }};
+
+    // Chart.js Color Config
+    const textColor = '#212529';
+    const gridColor = '#dee2e6';
+
+    Chart.defaults.color = textColor;
+    Chart.defaults.borderColor = gridColor;
+
+    // Status Chart (Doughnut)
+    const statusCanvas = document.getElementById('statusChart');
+    if (statusCanvas) {
+        const ctx = statusCanvas.getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Abiertos', 'En Proceso', 'Cerrados'],
+                datasets: [{
+                    data: statusData,
+                    backgroundColor: [
+                        '#ef4444',  // red
+                        '#f59e0b',  // amber
+                        '#16a34a'   // green
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 15,
+                            font: {
+                                size: 12
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Priority Chart (Bar)
+    const priorityCanvas = document.getElementById('priorityChart');
+    if (priorityCanvas) {
+        const ctx = priorityCanvas.getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Alta', 'Media', 'Baja'],
+                datasets: [{
+                    label: 'Cantidad de Tickets',
+                    data: priorityData,
+                    backgroundColor: [
+                        '#ef4444',  // red
+                        '#f59e0b',  // amber
+                        '#06b6d4'   // cyan
+                    ],
+                    borderRadius: 8,
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1,
+                            color: textColor
+                        },
+                        grid: {
+                            color: gridColor
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            color: textColor
+                        },
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    }
+}) ();
+</script>
+{% endblock %}

@@ -1,403 +1,198 @@
 {% extends "layouts/page_shell.html" %}
 
 {% block content %}
-<!-- Preloader -->
-<div id="profile-preloader"
-    style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.95); z-index: 99999; display: flex; justify-content: center; align-items: center; flex-direction: column;">
-    <div class="loader-3d"
-        style="position: relative; width: calc(32px * 4 + 4px * 6); height: calc(32px * 2 + 4px * 4); transform-style: preserve-3d; transform: rotateX(-20deg) rotateY(-45deg);">
-        <div class="box"
-            style="position: absolute; width: 32px; height: 32px; border-radius: 4px; background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%); transform-style: preserve-3d; animation: flip 1600ms cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite; box-shadow: 0 0 20px rgba(168, 85, 247, 0.4); left: 0; top: 0; animation-delay: -1400ms;">
-        </div>
-        <div class="box"
-            style="position: absolute; width: 32px; height: 32px; border-radius: 4px; background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%); transform-style: preserve-3d; animation: flip 1600ms cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite; box-shadow: 0 0 20px rgba(168, 85, 247, 0.4); left: calc(32px * 1 + 4px * 2); top: 0; animation-delay: -1200ms;">
-        </div>
-        <div class="box"
-            style="position: absolute; width: 32px; height: 32px; border-radius: 4px; background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%); transform-style: preserve-3d; animation: flip 1600ms cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite; box-shadow: 0 0 20px rgba(168, 85, 247, 0.4); left: calc(32px * 2 + 4px * 4); top: 0; animation-delay: -1000ms;">
-        </div>
-        <div class="box"
-            style="position: absolute; width: 32px; height: 32px; border-radius: 4px; background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%); transform-style: preserve-3d; animation: flip 1600ms cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite; box-shadow: 0 0 20px rgba(168, 85, 247, 0.4); left: calc(32px * 3 + 4px * 6); top: 0; animation-delay: -800ms;">
-        </div>
-        <div class="box"
-            style="position: absolute; width: 32px; height: 32px; border-radius: 4px; background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%); transform-style: preserve-3d; animation: flip 1600ms cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite; box-shadow: 0 0 20px rgba(168, 85, 247, 0.4); left: 0; top: calc(32px * 1 + 4px * 2); animation-delay: -600ms;">
-        </div>
-        <div class="box"
-            style="position: absolute; width: 32px; height: 32px; border-radius: 4px; background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%); transform-style: preserve-3d; animation: flip 1600ms cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite; box-shadow: 0 0 20px rgba(168, 85, 247, 0.4); left: calc(32px * 1 + 4px * 2); top: calc(32px * 1 + 4px * 2); animation-delay: -400ms;">
-        </div>
-        <div class="box"
-            style="position: absolute; width: 32px; height: 32px; border-radius: 4px; background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%); transform-style: preserve-3d; animation: flip 1600ms cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite; box-shadow: 0 0 20px rgba(168, 85, 247, 0.4); left: calc(32px * 2 + 4px * 4); top: calc(32px * 1 + 4px * 2); animation-delay: -200ms;">
-        </div>
-        <div class="box"
-            style="position: absolute; width: 32px; height: 32px; border-radius: 4px; background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%); transform-style: preserve-3d; animation: flip 1600ms cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite; box-shadow: 0 0 20px rgba(168, 85, 247, 0.4); left: calc(32px * 3 + 4px * 6); top: calc(32px * 1 + 4px * 2); animation-delay: 0ms;">
-        </div>
-    </div>
-    <div
-        style="margin-top: 60px; font-size: 18px; font-weight: 600; color: var(--c-purple); letter-spacing: 2px; text-transform: uppercase;">
-        CARGANDO PERFIL</div>
-</div>
-
-<!-- Page Title -->
-<h1 class="page-title">
-    <i class="fa-solid fa-user"></i> Mi Perfil
-</h1>
-
-<!-- Stats Cards Mini -->
-<div class="stats-grid">
-    <div class="stat-card stat-purple">
-        <div class="stat-title">Usuario</div>
-        <div class="stat-value">{{ current_user.username }}</div>
-    </div>
-    <div class="stat-card stat-cyan">
-        <div class="stat-title">Email</div>
-        <div class="stat-value">{{ current_user.email[:20] }}...</div>
-    </div>
-    <div class="stat-card stat-green">
-        <div class="stat-title">Rol</div>
-        <div class="stat-value">
-            {% if current_user.role == 'admin' %}
-            <i class="fa-solid fa-user-shield"></i>
-            {% elif current_user.role == 'tecnico' %}
-            <i class="fa-solid fa-user-gear"></i>
-            {% else %}
-            <i class="fa-solid fa-user"></i>
-            {% endif %}
-        </div>
-    </div>
-    <div class="stat-card stat-amber">
-        <div class="stat-title">Miembro Desde</div>
-        <div class="stat-value">{{ current_user.created_at.strftime('%Y') if current_user.created_at else '2024' }}
-        </div>
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+    <div>
+        <h1 class="text-2xl font-bold flex items-center gap-2">
+            <i class="fa-solid fa-user text-primary"></i>
+            Mi Perfil
+        </h1>
+        <p class="text-base-content/60 text-sm">Gestiona tu información personal y cuenta</p>
     </div>
 </div>
 
-<!-- Profile Card -->
-<div class="desktop-card profile-card">
-    <div class="profile-content">
-        <!-- Left Column: Profile Picture -->
-        <div class="profile-picture-section">
-            <div class="profile-picture-container">
-                <img src="{{ url_for('static', filename=current_user.get_profile_picture()) }}" alt="Profile Picture"
-                    id="profilePreview" class="profile-picture-img">
+<!-- Stats Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <!-- Usuario -->
+    <div class="stats shadow glass-card">
+        <div class="stat">
+            <div class="stat-figure text-secondary">
+                <i class="fa-solid fa-user text-3xl"></i>
             </div>
-
-            <form method="POST" enctype="multipart/form-data" id="profileForm">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-
-                <div class="form-group">
-                    <label for="profile_picture" class="form-label">
-                        <i class="fa-solid fa-camera"></i> Cambiar Foto de Perfil
-                    </label>
-                    <input type="file" class="form-file" id="profile_picture" name="profile_picture" accept="image/*"
-                        onchange="previewProfileImage(event)">
-                    <small class="form-help">
-                        <i class="fa-solid fa-info-circle"></i>
-                        Formatos: JPG, PNG, GIF (máx. 2MB)
-                    </small>
-                </div>
-
-                <button type="submit" class="btn-primary">
-                    <i class="fa-solid fa-save"></i> Actualizar Foto
-                </button>
-            </form>
+            <div class="stat-title">Usuario</div>
+            <div class="stat-value text-secondary text-2xl">{{ current_user.username }}</div>
         </div>
+    </div>
 
-        <!-- Right Column: User Information -->
-        <div class="profile-info-section">
-            <h3 class="profile-section-title">
-                <i class="fa-solid fa-id-card"></i> Información del Usuario
-            </h3>
+    <!-- Email -->
+    <div class="stats shadow glass-card">
+        <div class="stat">
+            <div class="stat-figure text-primary">
+                <i class="fa-solid fa-envelope text-3xl"></i>
+            </div>
+            <div class="stat-title">Email</div>
+            <div class="stat-value text-primary text-xl truncate" title="{{ current_user.email }}">
+                {{ current_user.email.split('@')[0] }}
+            </div>
+            <div class="stat-desc truncate">@{{ current_user.email.split('@')[1] }}</div>
+        </div>
+    </div>
 
-            <div class="info-grid">
-                <div class="info-item">
-                    <div class="info-label">
-                        <i class="fa-solid fa-user"></i> Nombre de Usuario
-                    </div>
-                    <div class="info-value">{{ current_user.username }}</div>
-                </div>
+    <!-- Rol -->
+    <div class="stats shadow glass-card">
+        <div class="stat">
+            <div class="stat-figure text-accent">
+                <i
+                    class="fa-solid {{ 'fa-user-shield' if current_user.role == 'admin' else 'fa-user-gear' if current_user.role == 'tecnico' else 'fa-user' }} text-3xl"></i>
+            </div>
+            <div class="stat-title">Rol</div>
+            <div class="stat-value text-accent text-2xl capitalize">{{ current_user.role }}</div>
+        </div>
+    </div>
 
-                <div class="info-item">
-                    <div class="info-label">
-                        <i class="fa-solid fa-envelope"></i> Email
-                    </div>
-                    <div class="info-value">{{ current_user.email }}</div>
-                </div>
-
-                <div class="info-item">
-                    <div class="info-label">
-                        <i class="fa-solid fa-shield-halved"></i> Rol
-                    </div>
-                    <div class="info-value">
-                        {% if current_user.role == 'admin' %}
-                        <span class="role-badge role-admin">Administrador</span>
-                        {% elif current_user.role == 'tecnico' %}
-                        <span class="role-badge role-tecnico">Técnico</span>
-                        {% else %}
-                        <span class="role-badge role-usuario">Usuario</span>
-                        {% endif %}
-                    </div>
-                </div>
-
-                <div class="info-item">
-                    <div class="info-label">
-                        <i class="fa-solid fa-calendar-plus"></i> Fecha de Registro
-                    </div>
-                    <div class="info-value">{{ current_user.created_at.strftime('%d/%m/%Y') if current_user.created_at
-                        else 'N/A' }}</div>
-                </div>
+    <!-- Miembro Desde -->
+    <div class="stats shadow glass-card">
+        <div class="stat">
+            <div class="stat-figure text-success">
+                <i class="fa-solid fa-calendar-check text-3xl"></i>
+            </div>
+            <div class="stat-title">Miembro Desde</div>
+            <div class="stat-value text-success text-2xl">
+                {{ current_user.created_at.strftime('%Y') if current_user.created_at else '2024' }}
             </div>
         </div>
     </div>
 </div>
 
-<style>
-    /* Profile Page Specific Styles */
-    .profile-card {
-        margin-top: 20px;
-        padding: 32px;
-    }
+<!-- Main Profile Card -->
+<div class="card glass-card shadow-xl overflow-hidden">
+    <!-- Cover Banner (opcional o decorativo) -->
+    <div class="h-32 bg-gradient-to-r from-primary to-secondary opacity-80"></div>
 
-    .profile-content {
-        display: grid;
-        grid-template-columns: 320px 1fr;
-        gap: 40px;
-    }
+    <div class="card-body -mt-16 pt-0">
+        <div class="flex flex-col lg:flex-row gap-8">
 
-    /* Profile Picture Section */
-    .profile-picture-section {
-        display: flex;
-        flex-direction: column;
-        gap: 24px;
-    }
+            <!-- Left Column: Avatar & Actions -->
+            <div class="flex flex-col items-center lg:w-1/3">
+                <!-- Avatar Container -->
+                <div class="avatar relative group">
+                    <div class="w-40 h-40 rounded-full ring-4 ring-base-100 shadow-2xl overflow-hidden bg-base-200">
+                        <img id="profilePreview"
+                            src="{{ url_for('static', filename=current_user.get_profile_picture()) }}" alt="Profile"
+                            class="object-cover w-full h-full transitions-transform duration-300 group-hover:scale-105"
+                            onerror="this.src='https://ui-avatars.com/api/?name={{ current_user.username }}&background=random'" />
+                    </div>
+                    <!-- Edit overlay (indicador visual) -->
+                    <div
+                        class="absolute inset-0 rounded-full bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer pointer-events-none">
+                        <i class="fa-solid fa-camera text-white text-2xl"></i>
+                    </div>
+                </div>
 
-    .profile-picture-container {
-        padding: 20px;
-        background: linear-gradient(135deg, rgba(168, 85, 247, 0.05) 0%, rgba(147, 51, 234, 0.05) 100%);
-        border-radius: 16px;
-        border: 2px dashed rgba(168, 85, 247, 0.3);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
+                <h2 class="text-2xl font-bold mt-4">{{ current_user.username }}</h2>
+                <div class="badge badge-outline mt-1 capitalize">{{ current_user.role }}</div>
 
-    .profile-picture-img {
-        width: 200px;
-        height: 200px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 4px solid white;
-        box-shadow: 0 8px 24px rgba(168, 85, 247, 0.2);
-        transition: transform 0.3s ease;
-    }
+                <div class="divider"></div>
 
-    .profile-picture-img:hover {
-        transform: scale(1.05);
-    }
+                <!-- Upload Form -->
+                <form id="profileForm" method="POST" enctype="multipart/form-data" class="w-full max-w-xs">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
 
-    /* Profile Info Section */
-    .profile-info-section {
-        display: flex;
-        flex-direction: column;
-        gap: 24px;
-    }
+                    <div class="form-control w-full">
+                        <label class="label">
+                            <span class="label-text font-semibold">Cambiar Foto</span>
+                        </label>
+                        <input type="file" id="profile_picture" name="profile_picture" accept="image/*"
+                            class="file-input file-input-bordered file-input-primary w-full"
+                            onchange="previewProfileImage(event)" />
+                        <label class="label">
+                            <span class="label-text-alt text-base-content/60">Max 2MB (JPG, PNG)</span>
+                        </label>
+                    </div>
 
-    .profile-section-title {
-        font-size: 20px;
-        font-weight: 700;
-        color: var(--text-title);
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        margin: 0;
-        padding-bottom: 16px;
-        border-bottom: 2px solid rgba(2, 6, 23, .08);
-    }
+                    <button type="submit" class="btn btn-primary w-full mt-4 gap-2">
+                        <i class="fa-solid fa-save"></i> Guardar Cambios
+                    </button>
+                </form>
+            </div>
 
-    .profile-section-title i {
-        color: var(--c-purple);
-        font-size: 24px;
-    }
+            <!-- Vertical Divider (Desktop) -->
+            <div class="hidden lg:block w-px bg-base-300 mx-4"></div>
 
-    .info-grid {
-        display: grid;
-        gap: 20px;
-    }
+            <!-- Right Column: User Details -->
+            <div class="flex-1">
+                <h3 class="text-xl font-bold mb-6 border-b border-base-300 pb-2">Información Personal</h3>
 
-    .info-item {
-        padding: 20px;
-        background: #f8fafc;
-        border-radius: 10px;
-        border: 1px solid rgba(2, 6, 23, .08);
-        transition: all 0.2s;
-    }
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Username -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Nombre de Usuario</span>
+                        </label>
+                        <div
+                            class="input input-bordered flex items-center gap-2 bg-base-200/50 cursor-not-allowed text-base-content/70">
+                            <i class="fa-solid fa-user text-base-content/40"></i>
+                            <span>{{ current_user.username }}</span>
+                        </div>
+                    </div>
 
-    .info-item:hover {
-        border-color: var(--c-purple);
-        box-shadow: 0 4px 12px rgba(168, 85, 247, 0.1);
-    }
+                    <!-- Email -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Correo Electrónico</span>
+                        </label>
+                        <div
+                            class="input input-bordered flex items-center gap-2 bg-base-200/50 cursor-not-allowed text-base-content/70">
+                            <i class="fa-solid fa-envelope text-base-content/40"></i>
+                            <span>{{ current_user.email }}</span>
+                        </div>
+                    </div>
 
-    .info-label {
-        font-size: 13px;
-        font-weight: 600;
-        color: var(--text-muted);
-        margin-bottom: 8px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
+                    <!-- Rol -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Rol Asignado</span>
+                        </label>
+                        <div class="input input-bordered flex items-center gap-2 bg-base-200/50 cursor-not-allowed">
+                            <i class="fa-solid fa-shield-halved text-base-content/40"></i>
+                            <span
+                                class="badge {{ 'badge-primary' if current_user.role == 'admin' else 'badge-secondary' }}">{{
+                                current_user.role|capitalize }}</span>
+                        </div>
+                    </div>
 
-    .info-label i {
-        opacity: 0.7;
-    }
+                    <!-- Fecha Registro -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold">Fecha de Registro</span>
+                        </label>
+                        <div
+                            class="input input-bordered flex items-center gap-2 bg-base-200/50 cursor-not-allowed text-base-content/70">
+                            <i class="fa-solid fa-calendar text-base-content/40"></i>
+                            <span>{{ current_user.created_at.strftime('%d/%m/%Y') if current_user.created_at else 'N/A'
+                                }}</span>
+                        </div>
+                    </div>
+                </div>
 
-    .info-value {
-        font-size: 16px;
-        font-weight: 600;
-        color: var(--text-title);
-    }
-
-    /* Form Styles */
-    .form-group {
-        margin-bottom: 20px;
-    }
-
-    .form-label {
-        display: block;
-        font-size: 13px;
-        font-weight: 600;
-        color: var(--text-soft);
-        margin-bottom: 8px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .form-label i {
-        opacity: 0.7;
-    }
-
-    .form-file {
-        width: 100%;
-        padding: 10px 14px;
-        border: 1px solid rgba(2, 6, 23, .12);
-        border-radius: 8px;
-        font-size: 13px;
-        background: white;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-
-    .form-file:hover {
-        border-color: var(--c-purple);
-    }
-
-    .form-help {
-        display: block;
-        font-size: 12px;
-        color: var(--text-muted);
-        margin-top: 6px;
-    }
-
-    .btn-primary {
-        width: 100%;
-        padding: 12px 24px;
-        border-radius: 8px;
-        font-size: 14px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        border: none;
-        background: linear-gradient(135deg, var(--c-purple) 0%, #9333ea 100%);
-        color: white;
-        white-space: nowrap;
-    }
-
-    .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(168, 85, 247, 0.3);
-    }
-
-    /* Role Badges */
-    .role-badge {
-        padding: 6px 14px;
-        border-radius: 20px;
-        font-size: 13px;
-        font-weight: 600;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-    }
-
-    .role-badge.role-admin {
-        background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%);
-        color: white;
-    }
-
-    .role-badge.role-tecnico {
-        background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
-        color: white;
-    }
-
-    .role-badge.role-usuario {
-        background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
-        color: white;
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-        .profile-content {
-            grid-template-columns: 1fr;
-        }
-
-        .profile-picture-img {
-            width: 150px;
-            height: 150px;
-        }
-    }
-
-    /* Preloader Animation */
-    @keyframes flip {
-        0% {
-            transform: rotateY(0deg) rotateX(0deg) translateZ(0);
-        }
-
-        25% {
-            transform: rotateY(90deg) rotateX(0deg) translateZ(0);
-        }
-
-        50% {
-            transform: rotateY(180deg) rotateX(0deg) translateZ(0);
-        }
-
-        75% {
-            transform: rotateY(270deg) rotateX(0deg) translateZ(0);
-        }
-
-        100% {
-            transform: rotateY(360deg) rotateX(0deg) translateZ(0);
-        }
-    }
-</style>
+                <div class="mt-8">
+                    <div class="alert alert-info shadow-sm glass-subtle">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <div>
+                            <h3 class="font-bold">Información de Cuenta</h3>
+                            <div class="text-xs">Para cambiar tu correo o contraseña, contacta al administrador del
+                                sistema.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
-    // Hide preloader after page loads
-    window.addEventListener('load', function () {
-        setTimeout(function () {
-            const preloader = document.getElementById('profile-preloader');
-            if (preloader) {
-                preloader.style.opacity = '0';
-                preloader.style.transition = 'opacity 0.5s ease';
-                setTimeout(function () {
-                    preloader.style.display = 'none';
-                }, 500);
-            }
-        }, 1500);
-    });
-
-    // Preview profile image before upload
+    // Preview profile image logic
     function previewProfileImage(event) {
         const input = event.target;
         const preview = document.getElementById('profilePreview');
@@ -411,7 +206,7 @@
         }
     }
 
-    // Form submission with SweetAlert
+    // AJAX Form Submission
     document.getElementById('profileForm').addEventListener('submit', (e) => {
         e.preventDefault();
 
@@ -426,28 +221,15 @@
             }
         });
 
-        // Add header to request JSON response
+        // Use fetch to submit
         fetch('{{ url_for("main.profile") }}', {
             method: 'POST',
             body: formData,
             headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-                'Accept': 'application/json'
+                'X-Requested-With': 'XMLHttpRequest'
             }
         })
-            .then(response => {
-                if (response.ok) {
-                    return response.json();
-                } else {
-                    return response.json().then(data => {
-                        throw new Error(data.message || 'Error en el servidor');
-                    }).catch(err => {
-                        // Fallback if response is not valid JSON
-                        if (err.message) throw err;
-                        throw new Error('Error en la respuesta del servidor (' + response.status + ')');
-                    });
-                }
-            })
+            .then(response => response.json())
             .then(data => {
                 if (data.success) {
                     Swal.fire({
@@ -457,10 +239,11 @@
                         showConfirmButton: false,
                         timer: 1500
                     }).then(() => {
+                        // Force reload to update avatar in topbar/sidebar
                         window.location.reload();
                     });
                 } else {
-                    throw new Error(data.message || 'Error desconocido');
+                    throw new Error(data.message || 'Error al actualizar');
                 }
             })
             .catch(error => {
@@ -468,7 +251,7 @@
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
-                    text: error.message || 'No se pudo actualizar la foto de perfil'
+                    text: error.message || 'Ocurrió un error inesperado'
                 });
             });
     });

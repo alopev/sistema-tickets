@@ -68,20 +68,35 @@
         {% if current_user and current_user.is_authenticated %}
         <!-- User Dropdown -->
         <div class="dropdown dropdown-end">
-            <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+            <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar placeholder">
+                {% if current_user.profile_picture %}
                 <div class="w-10 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
-                    <img src="{{ url_for('static', filename=current_user.get_profile_picture()) }}" alt="Profile" />
+                    <img src="{{ url_for('static', filename=current_user.get_profile_picture()) }}"
+                        alt="{{ current_user.username }}" class="object-cover w-full h-full"
+                        onerror="this.parentNode.classList.add('hidden'); this.parentNode.nextElementSibling.classList.remove('hidden');" />
                 </div>
+                <!-- Fallback (iniciales) oculto por defecto, se muestra si falla la imagen -->
+                <div
+                    class="bg-neutral text-neutral-content w-10 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2 hidden">
+                    <span class="text-xs font-bold">{{ current_user.username[:2] | upper }}</span>
+                </div>
+                {% else %}
+                <!-- Solo iniciales si no hay foto -->
+                <div
+                    class="bg-neutral text-neutral-content w-10 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
+                    <span class="text-xs font-bold">{{ current_user.username[:2] | upper }}</span>
+                </div>
+                {% endif %}
             </div>
             <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow-lg glass-card rounded-box w-52">
                 <li class="menu-title">
-                    <span class="text-white">Hola, {{ current_user.username }}</span>
+                    <span class="text-base-content/70">Hola, {{ current_user.username }}</span>
                 </li>
-                <li><a href="{{ url_for('main.profile') }}">
+                <li><a href="{{ url_for('main.profile') }}" class="py-2">
                         <i class="fa-solid fa-user"></i>
                         Mi Perfil
                     </a></li>
-                <li><a href="{{ url_for('auth.logout') }}">
+                <li><a href="{{ url_for('auth.logout') }}" class="py-2 text-error">
                         <i class="fa-solid fa-right-from-bracket"></i>
                         Salir
                     </a></li>

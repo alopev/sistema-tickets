@@ -10,7 +10,7 @@
         <!-- Brand -->
         <div class="flex items-center gap-3 ml-2">
             <div class="avatar placeholder">
-                <div class="bg-gradient-to-br from-primary to-secondary text-white rounded-lg w-10">
+                <div class="bg-gradient-to-br from-primary to-secondary text-primary-content rounded-lg w-10">
                     <span class="text-sm font-bold">
                         {% if system_settings and system_settings.project_name %}
                         {{ system_settings.project_name[:2].upper() }}
@@ -21,7 +21,7 @@
                 </div>
             </div>
             <div class="hidden md:block">
-                <h1 class="text-lg font-bold text-white">
+                <h1 class="text-lg font-bold text-base-content">
                     {{ system_settings.project_name if system_settings else 'Mesa de Servicio' }}
                 </h1>
             </div>
@@ -34,7 +34,7 @@
             class="w-full">
             <div class="join w-full">
                 <input type="search" name="q" placeholder="Buscar..."
-                    class="input input-bordered input-sm join-item flex-1 bg-white/10 text-white placeholder:text-white/60 border-white/20" />
+                    class="input input-bordered input-sm join-item flex-1 bg-base-200 focus:bg-base-100 text-base-content placeholder:text-base-content/60 border-base-300" />
                 <button type="submit" class="btn btn-sm btn-primary join-item" aria-label="Buscar">
                     <i class="fa-solid fa-magnifying-glass"></i>
                 </button>

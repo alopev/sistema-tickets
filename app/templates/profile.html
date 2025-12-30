@@ -67,33 +67,34 @@
 
 <!-- Main Profile Card -->
 <div class="card glass-card shadow-xl overflow-hidden">
-    <!-- Cover Banner (opcional o decorativo) -->
-    <div class="h-32 bg-gradient-to-r from-primary to-secondary opacity-80"></div>
+    <!-- Cover Banner -->
+    <div class="h-24 bg-gradient-to-r from-primary to-secondary opacity-90"></div>
 
-    <div class="card-body -mt-16 pt-0">
-        <div class="flex flex-col lg:flex-row gap-8">
+    <div class="card-body p-6">
+        <div class="flex flex-col lg:flex-row gap-8 items-start">
 
             <!-- Left Column: Avatar & Actions -->
-            <div class="flex flex-col items-center lg:w-1/3">
+            <div class="flex flex-col items-center lg:w-1/3 -mt-12 lg:-mt-16 mb-4 lg:mb-0">
                 <!-- Avatar Container -->
                 <div class="avatar relative group">
-                    <div class="w-40 h-40 rounded-full ring-4 ring-base-100 shadow-2xl overflow-hidden bg-base-200">
+                    <div
+                        class="w-32 h-32 lg:w-40 lg:h-40 rounded-full ring-4 ring-base-100 shadow-2xl overflow-hidden bg-base-200">
                         <img id="profilePreview"
                             src="{{ url_for('static', filename=current_user.get_profile_picture()) }}" alt="Profile"
-                            class="object-cover w-full h-full transitions-transform duration-300 group-hover:scale-105"
+                            class="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
                             onerror="this.src='https://ui-avatars.com/api/?name={{ current_user.username }}&background=random'" />
                     </div>
-                    <!-- Edit overlay (indicador visual) -->
+                    <!-- Edit overlay -->
                     <div
                         class="absolute inset-0 rounded-full bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer pointer-events-none">
                         <i class="fa-solid fa-camera text-white text-2xl"></i>
                     </div>
                 </div>
 
-                <h2 class="text-2xl font-bold mt-4">{{ current_user.username }}</h2>
+                <h2 class="text-2xl font-bold mt-4 text-center">{{ current_user.username }}</h2>
                 <div class="badge badge-outline mt-1 capitalize">{{ current_user.role }}</div>
 
-                <div class="divider"></div>
+                <div class="divider w-full"></div>
 
                 <!-- Upload Form -->
                 <form id="profileForm" method="POST" enctype="multipart/form-data" class="w-full max-w-xs">

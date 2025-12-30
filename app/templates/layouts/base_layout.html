@@ -28,10 +28,16 @@
     {% block extra_head %}{% endblock %}
 </head>
 
-<body class="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900">
-    <!-- Subtle dots background pattern -->
-    <div class="fixed inset-0 opacity-20 pointer-events-none"
+<body
+    class="min-h-screen bg-base-100 dark:bg-gradient-to-br dark:from-gray-900 dark:via-blue-900 dark:to-purple-900 text-base-content transition-colors duration-300">
+    <!-- Subtle dots background pattern (Dark Mode only) -->
+    <div class="fixed inset-0 opacity-20 pointer-events-none hidden dark:block"
         style="background-image: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 20px 20px;">
+    </div>
+
+    <!-- Subtle mesh background (Light Mode only) -->
+    <div class="fixed inset-0 opacity-40 pointer-events-none dark:hidden"
+        style="background-image: radial-gradient(circle, rgba(0,0,0,0.05) 1px, transparent 1px); background-size: 20px 20px;">
     </div>
 
     <!-- Particle canvas for mouse interaction -->
@@ -101,7 +107,11 @@
                     this.vx = (Math.random() - 0.5) * 0.5;
                     this.vy = (Math.random() - 0.5) * 0.5;
                     this.size = Math.random() * 2 + 1;
-                    this.color = `rgba(${Math.random() * 50 + 100}, ${Math.random() * 50 + 100}, 255, ${Math.random() * 0.5})`;
+                    // Detect dark mode for particle color
+                    const isDark = document.documentElement.getAttribute('data-theme') === 'business';
+                    this.color = isDark
+                        ? `rgba(${Math.random() * 50 + 100}, ${Math.random() * 50 + 100}, 255, ${Math.random() * 0.5})`
+                        : `rgba(0, 0, 0, 0.05)`; // Subtle gray for light mode
                 }
 
                 update() {
@@ -138,17 +148,31 @@
 
             function initParticles() {
                 particles = [];
-                for (let i = 0; i < 100; i++) {
+                // Fewer particles in light mode for cleaner look
+                const isDark = document.documentElement.getAttribute('data-theme') === 'business';
+                const count = isDark ? 100 : 50;
+
+                for (let i = 0; i < count; i++) {
                     particles.push(new Particle());
                 }
             }
 
             initParticles();
 
-            function animate() {
-                ctx.fillStyle = 'rgba(17, 24, 39, 0.2)';
-                ctx.fillRect(0, 0, width, height);
+            // Re-init particles on theme change
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.type === "attributes" && mutation.attributeName === "data-theme") {
+                        initParticles();
+                    }
+                });
+            });
+            observer.observe(document.documentElement, { attributes: true });
 
+            function animate() {
+                ctx.clearRect(0, 0, width, height); // Clear instead of fillRect to be transparent
+
+                // Only draw particles, let CSS handle background
                 particles.forEach(p => {
                     p.update();
                     p.draw();
